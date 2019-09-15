@@ -30,7 +30,7 @@ func NewConfiguration(environment *Environment, certFile string, keyFile string,
 
 var (
 	TestEnvironment       = Environment{BaseUrl: "https://appapi2.test.bankid.com/rp/v5", CertificationFilePath: GetResourcePath("certificates/ca.test.crt")}
-	ProductionEnvironment = Environment{BaseUrl: "https://appapi2.bankid.com/rp/v5", CertificationFilePath: GetResourcePath("certificates/ca.test.crt")}
+	ProductionEnvironment = Environment{BaseUrl: "https://appapi2.bankid.com/rp/v5", CertificationFilePath: GetResourcePath("certificates/ca.prod.crt")}
 )
 
 func GetResourceDirectoryPath() (directory string, err error) {
