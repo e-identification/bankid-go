@@ -53,13 +53,13 @@ func TestSignRequestWithValidPayload(t *testing.T) {
 
 	defer teardown()
 
-	payload := &SignPayload{PersonalNumber: "198112189876", EndUserIp: "192.168.1.1", UserVisibleData: "Test", Requirement: &Requirement{CardReader: ""}}
+	payload := &SignPayload{PersonalNumber: "123456789123", EndUserIp: "192.168.1.1", UserVisibleData: "Test", Requirement: &Requirement{CardReader: ""}}
 
 	bankId.Sign(payload)
 }
 
 func TestSignRequestWithInvalidPayload(t *testing.T) {
-	bankId := NewBankId(&configuration.Configuration{})
+	bankId := New(&configuration.Configuration{})
 
 	payload := &SignPayload{PersonalNumber: "INVALID-PERSONAL-NUMBER", EndUserIp: "192.168.1.1", UserVisibleData: "Test", Requirement: &Requirement{CardReader: ""}}
 	_, err := bankId.Sign(payload)
@@ -88,7 +88,7 @@ func TestCollectRequestWithValidPayload(t *testing.T) {
 func createMockedClient(handler *http.HandlerFunc) (*BankId, func()) {
 	configuration := configuration.NewConfiguration(&configuration.TestEnvironment, getResourcePath("certificates/test.crt"), getResourcePath("certificates/test.key"), 5)
 
-	bankId := NewBankId(configuration)
+	bankId := New(configuration)
 
 	httpClient, teardown := testingHTTPClient(handler)
 	client, _ := newClient(configuration, withHttpClient(httpClient))

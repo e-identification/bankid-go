@@ -14,8 +14,8 @@ type BankId struct {
 	client        *Client
 }
 
-// NewBankId returns a new instance of 'BankId'
-func NewBankId(configuration *configuration.Configuration) *BankId {
+// New returns a new instance of 'BankId'
+func New(configuration *configuration.Configuration) *BankId {
 	return &BankId{validator: newValidator(), configuration: configuration}
 }
 
