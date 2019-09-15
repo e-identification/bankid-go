@@ -10,8 +10,7 @@ func main() {
 	configuration := configuration.NewConfiguration(
 		&configuration.TestEnvironment,
 		configuration.GetResourcePath("certificates/test.crt"),
-		configuration.GetResourcePath("certificates/test.key"),
-		5)
+		configuration.GetResourcePath("certificates/test.key"))
 
 	bankId := bankid.New(configuration)
 

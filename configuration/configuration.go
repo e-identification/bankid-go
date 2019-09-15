@@ -20,12 +20,25 @@ type Configuration struct {
 	Timeout     time.Duration
 }
 
-func NewConfiguration(environment *Environment, certFile string, keyFile string, timeout time.Duration) *Configuration {
-	if timeout == -1 {
-		timeout = 5
+func NewConfiguration(environment *Environment, certFile string, keyFile string, options ...Option) *Configuration {
+	instance := &Configuration{Environment: environment, CertFile: certFile, KeyFile: keyFile, Timeout: 60}
+
+	// Apply options if there are any, can overwrite default
+	for _, option := range options {
+		option(instance)
 	}
 
-	return &Configuration{Environment: environment, CertFile: certFile, KeyFile: keyFile, Timeout: timeout}
+	return instance
+}
+
+// Option definition
+type Option func(*Configuration)
+
+// Function to create Option func to set the timeout limit
+func setTimeout(timeout time.Duration) Option {
+	return func(subject *Configuration) {
+		subject.Timeout = timeout
+	}
 }
 
 var (

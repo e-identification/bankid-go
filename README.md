@@ -28,8 +28,7 @@ We support the two major Go versions, which are 1.12 and 1.13 at the moment.
 configuration := configuration.NewConfiguration(
     &configuration.TestEnvironment,
     configuration.GetResourcePath("certificates/test.crt"),
-    configuration.GetResourcePath("certificates/test.key"),
-    5)
+    configuration.GetResourcePath("certificates/test.key"))
 
 bankId := bankid.New(configuration)
 payload := bankid.SignPayload{PersonalNumber: "<INSERT PERSONAL NUMBER>", EndUserIp: "192.168.1.1", UserVisibleData: "Test"}
@@ -52,9 +51,8 @@ go test -v -race $(go list ./... | grep -v vendor)
 ```
 
 ## TODO
-Add unit tests
-Add validator translator
-Add all Recommended User Messages
+ - Add unit tests
+ - Add validator translator
 
 ## Contributing
   - Fork it!

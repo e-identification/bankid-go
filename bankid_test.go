@@ -86,7 +86,7 @@ func TestCollectRequestWithValidPayload(t *testing.T) {
 }
 
 func createMockedClient(handler *http.HandlerFunc) (*BankId, func()) {
-	configuration := configuration.NewConfiguration(&configuration.TestEnvironment, getResourcePath("certificates/test.crt"), getResourcePath("certificates/test.key"), 5)
+	configuration := configuration.NewConfiguration(&configuration.TestEnvironment, getResourcePath("certificates/test.crt"), getResourcePath("certificates/test.key"))
 
 	bankId := New(configuration)
 
