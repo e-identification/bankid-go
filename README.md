@@ -64,3 +64,5 @@ go test -v -race $(go list ./... | grep -v vendor)
 ## Contributors
   - [Nicklas Wallgren](https://github.com/NicklasWallgren)
   - [All Contributors][link-contributors]
+
+[link-contributors]: ../../contributors
