@@ -2,6 +2,9 @@ language: go
 
 sudo: false
 
+before_install:
+  - go get github.com/mattn/goveralls
+
 matrix:
   include:
     - go: "1.13.x"
@@ -13,3 +16,4 @@ matrix:
     - ./.travis.gofmt.sh
     - ./.travis.govet.sh
     - go test -v -race $(go list ./... | grep -v vendor)
+    - $GOPATH/bin/goveralls -service=travis-ci
