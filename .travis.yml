@@ -4,9 +4,12 @@ sudo: false
 
 matrix:
   include:
+    - go: "1.13.x"
+      env: GO111MODULE=on
     - go: "1.12.x"
       env: GO111MODULE=on
     - go: tip
   script:
     - ./.travis.gofmt.sh
+    - ./.travis.govet.sh
     - go test -v -race $(go list ./... | grep -v vendor)
