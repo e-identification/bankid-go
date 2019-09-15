@@ -23,28 +23,27 @@ We support the two major Go versions, which are 1.12 and 1.13 at the moment.
 
 # Examples 
 
-## Initiate authenticate request
-```php
-$client = new Client(new Config(<CERTFICATE>));
+## Initiate sign request
+```go
+configuration := configuration.NewConfiguration(
+    &configuration.TestEnvironment,
+    configuration.GetResourcePath("certificates/test.crt"),
+    configuration.GetResourcePath("certificates/test.key"),
+    5)
 
-$authenticationResponse = $client->authenticate(new AuthenticationPayload(<PERSONAL NUMBER>, <IP ADDRESS>));
+bankId := bankid.New(configuration)
+payload := bankid.SignPayload{PersonalNumber: "<INSERT PERSONAL NUMBER>", EndUserIp: "192.168.1.1", UserVisibleData: "Test"}
+response, err := bankId.Sign(&payload)
 
-if (!$authenticationResponse->isSuccess()) {
-    var_dump($authenticationResponse->getErrorCode(), $authenticationResponse->getDetails());
+if err != nil {
+    fmt.Println(err)
 
-    return;
+    return
 }
 
-$collectResponse = $authenticationResponse->collect(); 
-```
-
-# Certificates
-The web service API can only be accessed by a RP that has a valid SSL client certificate. The RP certificate is obtained from the
-bank that the RP has purchased the BankID service from.
-
-## Generate PEM certificate
-```bash
-openssl pkcs12 -in <filename>.pfx -out <cert>.pem -nodes
+if response.IsSuccess() {
+    response.Collect()
+} 
 ```
 
 ## Unit tests
