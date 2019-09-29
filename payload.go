@@ -49,7 +49,7 @@ type SignPayload struct {
 	UserVisibleData string `validate:"required,base64Length=40000" json:"userVisibleData"`
 	// Data not displayed for the user.
 	// 1-200 000 characters after base 64-encoding.
-	UserNonVisibleData string `json:"userNonVisibleData, omitempty"`
+	UserNonVisibleData string `json:"userNonVisibleData,omitempty"`
 	// Requirements on how the auth or sign order must be performed.
 	Requirement *Requirement `json:"requirement,omitempty"`
 }

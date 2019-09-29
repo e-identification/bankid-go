@@ -52,7 +52,7 @@ func (e Envelope) IsSuccess() bool {
 type AuthenticateResponse struct {
 	Envelope
 	// Used as reference to this order when the client is started automatically.
-	AutoStartToken string `json:autoStartToken`
+	AutoStartToken string `json:"autoStartToken"`
 	// Used to collect the status of the order.
 	OrderRef string `json:"orderRef"`
 	bankId   *BankId
