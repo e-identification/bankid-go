@@ -89,13 +89,11 @@ func (b *BankId) call(request Request) (*Response, error) {
 	defer cancel()
 
 	// Validate the integrity of the call
-	err := b.validator.Struct(request.Payload())
-
-	if err != nil {
+	if err := b.validator.Struct(request.Payload()); err != nil {
 		return nil, err
 	}
 
-	if err = b.initialize(); err != nil {
+	if err := b.initialize(); err != nil {
 		return nil, err
 	}
 
