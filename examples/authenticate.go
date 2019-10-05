@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	configuration := configuration.NewConfiguration(
+	configuration := configuration.New(
 		&configuration.TestEnvironment,
 		configuration.GetResourcePath("certificates/test.crt"),
 		configuration.GetResourcePath("certificates/test.key"))

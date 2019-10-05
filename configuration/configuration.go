@@ -20,7 +20,7 @@ type Configuration struct {
 	Timeout     time.Duration
 }
 
-func NewConfiguration(environment *Environment, certFile string, keyFile string, options ...Option) *Configuration {
+func New(environment *Environment, certFile string, keyFile string, options ...Option) *Configuration {
 	instance := &Configuration{Environment: environment, CertFile: certFile, KeyFile: keyFile, Timeout: 60}
 
 	// Apply options if there are any, can overwrite default

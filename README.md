@@ -36,7 +36,7 @@ configuration := configuration.NewConfiguration(
     configuration.GetResourcePath("certificates/test.crt"),
     configuration.GetResourcePath("certificates/test.key"))
 
-bankId := bankid.New(configuration.configuration)
+bankId := bankid.New(configuration)
 
 payload := bankid.SignPayload{PersonalNumber: "<INSERT PERSONAL NUMBER>", EndUserIp: "192.168.1.1", UserVisibleData: "Test"}
 
