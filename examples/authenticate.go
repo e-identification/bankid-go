@@ -19,16 +19,13 @@ func main() {
 	response, err := bankId.Authenticate(&payload)
 
 	if err != nil {
-		fmt.Println(err)
+		if response := bankid.UnwrapErrorResponse(err); response != nil {
+			fmt.Printf("%s - %s \n", response.Details, response.ErrorCode)
+		}
 
+		fmt.Printf("%#v", err)
 		return
 	}
 
-	if response.IsSuccess() {
-		response.Collect()
-	}
-
-	fmt.Println(response.ErrorCode)
-	fmt.Println(response.OrderRef)
-	fmt.Println(response.IsSuccess())
+	fmt.Println(response.Collect())
 }

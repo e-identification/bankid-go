@@ -33,29 +33,20 @@ const (
 	ErrorAlreadyInProgress = "alreadyInProgress"
 )
 
-type Envelope struct {
-	ErrorCode string `json:"errorCode"`
-	Details   string `json:"details"`
-	Response
-}
-
 type Response interface {
-	IsSuccess() bool
 	Decode(subject io.ReadCloser, bankId *BankId) (Response, error)
 }
 
-// IsSuccess return true if the request was successful, false otherwise
-func (e Envelope) IsSuccess() bool {
-	return len(e.ErrorCode) <= 0
-}
-
 type AuthenticateResponse struct {
-	Envelope
 	// Used as reference to this order when the client is started automatically.
 	AutoStartToken string `json:"autoStartToken"`
 	// Used to collect the status of the order.
 	OrderRef string `json:"orderRef"`
 	bankId   *BankId
+}
+
+func (a *AuthenticateResponse) String() string {
+	return fmt.Sprintf("%#v", a)
 }
 
 // Decode reads the JSON-encoded value and stories it in a authenticate response struct
@@ -76,10 +67,6 @@ func (a *AuthenticateResponse) Decode(subject io.ReadCloser, bankId *BankId) (Re
 // RP should keep calling collect every two seconds as long as status indicates pending.
 // RP must abort if status indicates failed. The user identity is returned when complete.
 func (a AuthenticateResponse) Collect() (*CollectResponse, error) {
-	if !a.IsSuccess() {
-		return nil, fmt.Errorf("action not applicable. Possible cause: %s %s", a.ErrorCode, a.Details)
-	}
-
 	return a.bankId.Collect(&CollectPayload{OrderRef: a.OrderRef})
 }
 
@@ -87,10 +74,6 @@ func (a AuthenticateResponse) Collect() (*CollectResponse, error) {
 //
 // This is typically used if the user cancels the order in your service or app.
 func (a AuthenticateResponse) Cancel() (*CancelResponse, error) {
-	if !a.IsSuccess() {
-		return nil, fmt.Errorf("action not applicable. Possible cause: %s %s", a.ErrorCode, a.Details)
-	}
-
 	return a.bankId.Cancel(&CancelPayload{OrderRef: a.OrderRef})
 }
 
@@ -112,11 +95,14 @@ func (s *SignResponse) Decode(subject io.ReadCloser, bankId *BankId) (Response, 
 }
 
 type CollectResponse struct {
-	Envelope
 	OrderRef       string         `json:"orderRef"`
 	Status         string         `json:"status"`
 	HintCode       string         `json:"hintCode"`
 	CompletionData CompletionData `json:"completionData"`
+}
+
+func (c CollectResponse) String() string {
+	return fmt.Sprintf("%#v", c)
 }
 
 // IsPending return true if the order is being processed. hintCode describes the status of the order.
@@ -135,9 +121,9 @@ func (c CollectResponse) IsComplete() bool {
 }
 
 // IsAlreadyInProgress returns true if the order is already in progress.
-func (c CollectResponse) IsAlreadyInProgress() bool {
-	return c.ErrorCode == ErrorAlreadyInProgress
-}
+//func (c CollectResponse) IsAlreadyInProgress() bool {
+//	return a.ErrorCode == ErrorAlreadyInProgress
+//}
 
 // Decode reads the JSON-encoded value and stories it in a collect response struct
 func (c *CollectResponse) Decode(subject io.ReadCloser, bankId *BankId) (Response, error) {
@@ -150,9 +136,7 @@ func (c *CollectResponse) Decode(subject io.ReadCloser, bankId *BankId) (Respons
 	return c, nil
 }
 
-type CancelResponse struct {
-	Envelope
-}
+type CancelResponse struct{}
 
 // Decode reads the JSON-encoded value and stories it in a cancel response struct
 func (c *CancelResponse) Decode(subject io.ReadCloser, bankId *BankId) (Response, error) {
@@ -163,6 +147,33 @@ func (c *CancelResponse) Decode(subject io.ReadCloser, bankId *BankId) (Response
 	}
 
 	return c, nil
+}
+
+type ErrorResponse struct {
+	ErrorCode string `json:"errorCode"`
+	Details   string `json:"details"`
+	bankId    *BankId
+}
+
+func (e *ErrorResponse) String() string {
+	return fmt.Sprintf("%#v", e)
+}
+
+func (e *ErrorResponse) Error() string {
+	return fmt.Sprintf("%s. %s", e.ErrorCode, e.Details)
+}
+
+// Decode reads the JSON-encoded value and stories it in a error response struct
+func (e *ErrorResponse) Decode(subject io.ReadCloser, bankId *BankId) (Response, error) {
+	err := decode(subject, &e)
+
+	if err != nil {
+		return nil, err
+	}
+
+	e.bankId = bankId
+
+	return e, nil
 }
 
 type CompletionData struct {

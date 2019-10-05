@@ -25,24 +25,33 @@ We support the two major Go versions, which are 1.12 and 1.13 at the moment.
 
 ## Initiate sign request
 ```go
+import (
+    "fmt"
+    "github.com/NicklasWallgren/bankid"
+    "github.com/NicklasWallgren/bankid/configuration"
+)
+
 configuration := configuration.NewConfiguration(
     &configuration.TestEnvironment,
     configuration.GetResourcePath("certificates/test.crt"),
     configuration.GetResourcePath("certificates/test.key"))
 
-bankId := bankid.New(configuration)
+bankId := bankid.New(configuration.configuration)
+
 payload := bankid.SignPayload{PersonalNumber: "<INSERT PERSONAL NUMBER>", EndUserIp: "192.168.1.1", UserVisibleData: "Test"}
+
 response, err := bankId.Sign(&payload)
 
 if err != nil {
-    fmt.Println(err)
+    if response := bankid.UnwrapErrorResponse(err); response != nil {
+        fmt.Printf("%s - %s \n", response.Details, response.ErrorCode)
+    }
 
+    fmt.Printf("%#v", err)
     return
 }
 
-if response.IsSuccess() {
-    response.Collect()
-} 
+fmt.Println(response.Collect())
 ```
 
 ## Unit tests
