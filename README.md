@@ -31,7 +31,7 @@ import (
     "github.com/NicklasWallgren/bankid/configuration"
 )
 
-configuration := configuration.NewConfiguration(
+configuration := configuration.New(
     &configuration.TestEnvironment,
     configuration.GetResourcePath("certificates/test.crt"),
     configuration.GetResourcePath("certificates/test.key"))
