@@ -15,7 +15,7 @@ func newTLSClientConfig(configuration *configuration.Configuration) (*tls.Config
 		return nil, err
 	}
 
-	rpCert, _ := createCertLeaf(configuration)
+	rpCert, err := createCertLeaf(configuration)
 
 	if err != nil {
 		return nil, err
