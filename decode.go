@@ -22,7 +22,7 @@ func newJsonDecoder() Decoder {
 
 func (j jsonDecoder) decode(subject Response, response *http.Response, bankId *BankId) (*Response, error) {
 	if !isValidHttpResponse(response.StatusCode, httpStatusCodes) {
-		return nil, fmt.Errorf("invalid http response. Http Code: %d. Body: %s", response.StatusCode, response.Body)
+		return nil, fmt.Errorf("invalid http response. Http Code: %d. Body: %s", response.StatusCode, readCloserToString(response.Body))
 	}
 
 	if isHttpStatusCodeWithinRange(response.StatusCode, successRange) {

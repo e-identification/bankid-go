@@ -1,9 +1,11 @@
 package bankid
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"golang.org/x/xerrors"
+	"io"
 	"path"
 	"runtime"
 )
@@ -49,4 +51,12 @@ func getResourcePath(path string) (directory string) {
 	}
 
 	return fmt.Sprintf("%s/%s", dir, path)
+}
+
+func readCloserToString(readCloser io.ReadCloser) string {
+	buf := new(bytes.Buffer)
+
+	buf.ReadFrom(readCloser)
+
+	return buf.String()
 }
