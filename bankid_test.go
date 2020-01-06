@@ -55,14 +55,14 @@ func TestSignRequestWithValidPayload(t *testing.T) {
 
 	payload := &SignPayload{PersonalNumber: "123456789123", EndUserIp: "192.168.1.1", UserVisibleData: "Test", Requirement: &Requirement{CardReader: ""}}
 
-	bankId.Sign(payload)
+	bankId.Sign(context.Background(), payload)
 }
 
 func TestSignRequestWithInvalidPayload(t *testing.T) {
 	bankId := New(&configuration.Configuration{})
 
 	payload := &SignPayload{PersonalNumber: "INVALID-PERSONAL-NUMBER", EndUserIp: "192.168.1.1", UserVisibleData: "Test", Requirement: &Requirement{CardReader: ""}}
-	_, err := bankId.Sign(payload)
+	_, err := bankId.Sign(context.Background(), payload)
 
 	validationErrors := err.(validator.ValidationErrors)
 	fieldError := validationErrors[0]
@@ -82,7 +82,7 @@ func TestCollectRequestWithValidPayload(t *testing.T) {
 
 	payload := &CollectPayload{OrderRef: ""}
 
-	bankId.Collect(payload)
+	bankId.Collect(context.Background(), payload)
 }
 
 func createMockedClient(handler *http.HandlerFunc) (*BankId, func()) {

@@ -1,6 +1,7 @@
 package bankid
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -66,15 +67,15 @@ func (a *AuthenticateResponse) Decode(subject io.ReadCloser, bankId *BankId) (Re
 //
 // RP should keep calling collect every two seconds as long as status indicates pending.
 // RP must abort if status indicates failed. The user identity is returned when complete.
-func (a AuthenticateResponse) Collect() (*CollectResponse, error) {
-	return a.bankId.Collect(&CollectPayload{OrderRef: a.OrderRef})
+func (a AuthenticateResponse) Collect(context context.Context) (*CollectResponse, error) {
+	return a.bankId.Collect(context, &CollectPayload{OrderRef: a.OrderRef})
 }
 
 // Cancel - Cancels an ongoing sign or auth order.
 //
 // This is typically used if the user cancels the order in your service or app.
-func (a AuthenticateResponse) Cancel() (*CancelResponse, error) {
-	return a.bankId.Cancel(&CancelPayload{OrderRef: a.OrderRef})
+func (a AuthenticateResponse) Cancel(context context.Context) (*CancelResponse, error) {
+	return a.bankId.Cancel(context, &CancelPayload{OrderRef: a.OrderRef})
 }
 
 type SignResponse struct {

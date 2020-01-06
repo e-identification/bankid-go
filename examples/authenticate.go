@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/NicklasWallgren/bankid"
 	"github.com/NicklasWallgren/bankid/configuration"
@@ -16,7 +17,7 @@ func main() {
 
 	payload := bankid.AuthenticationPayload{PersonalNumber: "<INSERT PERSONAL NUMBER>", EndUserIp: "192.168.1.1"}
 
-	response, err := bankId.Authenticate(&payload)
+	response, err := bankId.Authenticate(context.Background(), &payload)
 
 	if err != nil {
 		if response := bankid.UnwrapErrorResponse(err); response != nil {
@@ -27,5 +28,5 @@ func main() {
 		return
 	}
 
-	fmt.Println(response.Collect())
+	fmt.Println(response.Collect(context.Background()))
 }

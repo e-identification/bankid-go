@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/NicklasWallgren/bankid/configuration"
 	"gopkg.in/go-playground/validator.v9"
-	"time"
 )
 
 // BankId contains the validator and configuration context
@@ -23,9 +22,9 @@ func New(configuration *configuration.Configuration) *BankId {
 //
 // Use the collect method to query the status of the order.
 // If the request is successful, the orderRef and autoStartToken is returned.
-func (b BankId) Authenticate(payload *AuthenticationPayload) (*AuthenticateResponse, error) {
+func (b BankId) Authenticate(context context.Context, payload *AuthenticationPayload) (*AuthenticateResponse, error) {
 	request := newAuthenticationRequest(payload)
-	response, err := b.call(request)
+	response, err := b.call(context, request)
 
 	if err != nil {
 		return nil, err
@@ -39,9 +38,9 @@ func (b BankId) Authenticate(payload *AuthenticationPayload) (*AuthenticateRespo
 //
 // Use the collect method to query the status of the order.
 // If the request is successful, the orderRef and autoStartToken is returned.
-func (b BankId) Sign(payload *SignPayload) (*SignResponse, error) {
+func (b BankId) Sign(context context.Context, payload *SignPayload) (*SignResponse, error) {
 	request := newSignRequest(payload)
-	response, err := b.call(request)
+	response, err := b.call(context, request)
 
 	if err != nil {
 		return nil, err
@@ -55,9 +54,9 @@ func (b BankId) Sign(payload *SignPayload) (*SignResponse, error) {
 //
 // RP should keep calling collect every two seconds as long as status indicates pending.
 // RP must abort if status indicates failed. The user identity is returned when complete.
-func (b BankId) Collect(payload *CollectPayload) (*CollectResponse, error) {
+func (b BankId) Collect(context context.Context, payload *CollectPayload) (*CollectResponse, error) {
 	request := newCollectRequest(payload)
-	response, err := b.call(request)
+	response, err := b.call(context, request)
 
 	if err != nil {
 		return nil, err
@@ -71,9 +70,9 @@ func (b BankId) Collect(payload *CollectPayload) (*CollectResponse, error) {
 // Cancel - Cancels an ongoing sign or auth order.
 //
 // This is typically used if the user cancels the order in your service or app.
-func (b BankId) Cancel(payload *CancelPayload) (*CancelResponse, error) {
+func (b BankId) Cancel(context context.Context, payload *CancelPayload) (*CancelResponse, error) {
 	request := newCancelRequest(payload)
-	response, err := b.call(request)
+	response, err := b.call(context, request)
 
 	if err != nil {
 		return nil, err
@@ -84,11 +83,11 @@ func (b BankId) Cancel(payload *CancelPayload) (*CancelResponse, error) {
 }
 
 // call validates the prerequisites of the requests and invokes the REST API method
-func (b *BankId) call(request Request) (*Response, error) {
-	context, cancel := context.WithTimeout(context.Background(), b.configuration.Timeout*time.Second)
-	defer cancel()
+func (b *BankId) call(context context.Context, request Request) (*Response, error) {
+	//context, cancel := context.WithTimeout(ctx, b.configuration.Timeout*time.Second)
+	//defer cancel()
 
-	// Validate the integrity of the call
+	// Validate the integrity of the payload
 	if err := b.validator.Struct(request.Payload()); err != nil {
 		return nil, err
 	}
@@ -97,13 +96,7 @@ func (b *BankId) call(request Request) (*Response, error) {
 		return nil, err
 	}
 
-	response, err := (*b.client).call(request, &context, b)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return response, nil
+	return (*b.client).call(request, context, b)
 }
 
 // initialize prepares the client in head of a request

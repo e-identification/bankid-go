@@ -17,7 +17,7 @@ var (
 // Client is the interface implemented by types that can invoke the BankID REST API
 type Client interface {
 	// call is responsible for making the HTTP call against BankId REST API
-	call(request Request, context *context.Context, bankId *BankId) (*Response, error)
+	call(request Request, context context.Context, bankId *BankId) (*Response, error)
 }
 
 type client struct {
@@ -62,7 +62,7 @@ func withHttpClient(target *http.Client) Option {
 }
 
 // call is responsible for making the HTTP call against BankId REST API
-func (c client) call(request Request, context *context.Context, bankId *BankId) (*Response, error) {
+func (c client) call(request Request, context context.Context, bankId *BankId) (*Response, error) {
 	encoded, err := c.encoder.encode(request.Payload())
 
 	if err != nil {
@@ -74,7 +74,7 @@ func (c client) call(request Request, context *context.Context, bankId *BankId) 
 		return nil, err
 	}
 
-	resp, err := c.request(req.WithContext(*context))
+	resp, err := c.request(req.WithContext(context))
 	if err != nil {
 		return nil, err
 	}
