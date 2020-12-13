@@ -87,7 +87,7 @@ func (b *BankId) call(context context.Context, request Request) (*Response, erro
 	//context, cancel := context.WithTimeout(ctx, b.configuration.Timeout*time.Second)
 	//defer cancel()
 
-	// Validate the integrity of the payload
+	// Validate the integrity of the Payload
 	if err := b.validator.Struct(request.Payload()); err != nil {
 		return nil, err
 	}

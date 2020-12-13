@@ -69,7 +69,7 @@ func (c client) call(request Request, context context.Context, bankId *BankId) (
 		return nil, err
 	}
 
-	req, err := c.newRequest(c.composeUrl(request), strings.NewReader(string(encoded)))
+	req, err := c.newRequest(c.urlFrom(request), strings.NewReader(string(encoded)))
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +93,7 @@ func (c client) newRequest(url string, body io.Reader) (*http.Request, error) {
 	return req, err
 }
 
-func (c client) composeUrl(request Request) string {
+func (c client) urlFrom(request Request) string {
 	return c.configuration.Environment.BaseUrl + "/" + request.Uri()
 }
 

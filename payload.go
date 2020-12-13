@@ -5,13 +5,8 @@ import (
 	"encoding/json"
 )
 
-// payloadInterface is the interface implemented by types that holds the fields to be delivered to the API
-type payloadInterface interface{}
-
-// payload holds the request fields to be delivered to the API
-type payload struct {
-	payloadInterface
-}
+// Payload is the interface implemented by types that holds the fields to be delivered to the API
+type Payload interface{}
 
 // Requirements holds the required and optional fields of the Requirement DTO
 type Requirement struct {
@@ -24,7 +19,7 @@ type Requirement struct {
 
 // AuthenticationPayload holds the required and optional fields of the authentication request
 type AuthenticationPayload struct {
-	*payload
+	Payload
 	// The personal number of the user. String 12 digits. Century must be included.
 	// If the personal number is excluded, the client must be started with
 	// the autoStartToken returned in the response.
@@ -35,9 +30,9 @@ type AuthenticationPayload struct {
 	Requirement *Requirement `json:"requirement,omitempty"`
 }
 
-// SignPayload holds the required and optional fields for the sign payload
+// SignPayload holds the required and optional fields for the sign Payload
 type SignPayload struct {
-	*payload
+	Payload
 	// The personal number of the user. String 12 digits. Century must be included.
 	// If the personal number is excluded, the client must be started with
 	// the autoStartToken returned in the response.
@@ -71,16 +66,16 @@ func (s SignPayload) MarshalJSON() ([]byte, error) {
 	})
 }
 
-// CollectPayload holds the required fields of the collect payload
+// CollectPayload holds the required fields of the collect Payload
 type CollectPayload struct {
-	*payload
+	Payload
 	// The orderRef from the response from authentication or sign.
 	OrderRef string `json:"orderRef"`
 }
 
-// CancelPayload holds the required fields of the collect payload
+// CancelPayload holds the required fields of the collect Payload
 type CancelPayload struct {
-	*payload
+	Payload
 	// The orderRef from the response from authentication or sign.
 	OrderRef string `json:"orderRef"`
 }

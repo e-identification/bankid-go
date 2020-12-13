@@ -6,59 +6,34 @@ import (
 	"github.com/NicklasWallgren/bankid/configuration"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/go-playground/validator.v9"
+	"io"
 	"net"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
+	"os"
 	"testing"
-	"unsafe"
 )
 
-const (
-	signOkResponse = `{
-		"orderRef":"131daac9-16c6-4618-beb0-365768f37288",
-		"autoStartToken":"7c40b5c9-fa74-49cf-b98c-bfe651f9a7c6" 
-	}`
-	collectOkResponse = `{
-		"orderRef": "131daac9-16c6-4618-beb0-365768f37288",
-  		"status": "complete",
-  		"completionData": {
-			"user": {
-      			"personalNumber": "190000000000",
-      			"name": "Karl Karlsson",
-      			"givenName": "Karl",
-      			"surname": "Karlsson"
-    		},
-    		"device": {
-      			"ipAddress": "192.168.0.1"
-			},
-    		"cert": {
-      			"notBefore": "1502983274000",
-      			"notAfter": "1563549674000"
-    		},
-    		"signature": "<base64-encoded data>",
-    		"ocspResponse": "<base64-encoded data>"
-		}
-	}
-	`
-)
-
-func TestSignRequestWithValidPayload(t *testing.T) {
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
-		w.Write([]byte(signOkResponse))
-	})
-
-	bankId, teardown := createMockedClient(&handler)
-
+func TestSign(t *testing.T) {
+	bankId, teardown := testClient(fileToResponseHandler(t, "resource/test_data/sign_response.json"))
 	defer teardown()
 
 	payload := &SignPayload{PersonalNumber: "123456789123", EndUserIp: "192.168.1.1", UserVisibleData: "Test", Requirement: &Requirement{CardReader: ""}}
 
-	bankId.Sign(context.Background(), payload)
+	response, err := bankId.Sign(context.Background(), payload)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+	if response == nil {
+		t.Fatal("Got nil response")
+	}
+	if response.AutoStartToken != "7c40b5c9-fa74-49cf-b98c-bfe651f9a7c6" {
+		t.Error("Got wrong auto start token")
+	}
 }
 
-func TestSignRequestWithInvalidPayload(t *testing.T) {
+func TestSignWithInvalidPayload(t *testing.T) {
 	bankId := New(&configuration.Configuration{})
 
 	payload := &SignPayload{PersonalNumber: "INVALID-PERSONAL-NUMBER", EndUserIp: "192.168.1.1", UserVisibleData: "Test", Requirement: &Requirement{CardReader: ""}}
@@ -70,42 +45,36 @@ func TestSignRequestWithInvalidPayload(t *testing.T) {
 	assert.Equal(t, "numeric", fieldError.Tag())
 }
 
-func TestCollectRequestWithValidPayload(t *testing.T) {
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
-		w.Write([]byte(collectOkResponse))
-	})
-
-	bankId, teardown := createMockedClient(&handler)
-
+func TestCollect(t *testing.T) {
+	bankId, teardown := testClient(fileToResponseHandler(t, "resource/test_data/collect_response.json"))
 	defer teardown()
 
 	payload := &CollectPayload{OrderRef: ""}
 
-	bankId.Collect(context.Background(), payload)
+	response, err := bankId.Collect(context.Background(), payload)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+	if response == nil {
+		t.Fatal("Got nil response")
+	}
 }
 
-func createMockedClient(handler *http.HandlerFunc) (*BankId, func()) {
+func testClient(handler http.HandlerFunc) (*BankId, func()) {
 	configuration := configuration.New(&configuration.TestEnvironment, getResourcePath("certificates/test.crt"), getResourcePath("certificates/test.key"))
 
 	bankId := New(configuration)
 
-	httpClient, teardown := testingHTTPClient(handler)
+	httpClient, teardown := testHTTPClient(handler)
+
 	client, _ := newClient(configuration, withHttpClient(httpClient))
-	var test *Client = &client
-	rs := reflect.ValueOf(bankId).Elem()
-	rf := rs.Field(2)
-	rf = reflect.NewAt(rf.Type(), unsafe.Pointer(rf.UnsafeAddr())).Elem()
-
-	field := reflect.New(reflect.TypeOf(test))
-	field.Elem().Set(reflect.ValueOf(test))
-
-	rf.Set(field.Elem())
+	bankId.client = &client
 
 	return bankId, teardown
 }
 
-func testingHTTPClient(handler http.Handler) (*http.Client, func()) {
+func testHTTPClient(handler http.Handler) (*http.Client, func()) {
 	s := httptest.NewTLSServer(handler)
 
 	cli := &http.Client{
@@ -120,4 +89,18 @@ func testingHTTPClient(handler http.Handler) (*http.Client, func()) {
 	}
 
 	return cli, s.Close
+}
+
+func fileToResponseHandler(t *testing.T, filename string) http.HandlerFunc {
+	file, err := os.Open(filename)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
+		io.Copy(w, file) // nolint:errcheck
+		file.Close()
+	}
 }
