@@ -3,7 +3,8 @@
 A library for providing BankID services as a RP (Relying party).
 Supports the latest v5 features.
 
-[![Build Status](https://travis-ci.org/NicklasWallgren/bankid.svg?branch=master)](https://travis-ci.org/NicklasWallgren/bankid)
+[![Build Status](https://github.com/NicklasWallgren/bankid/workflows/Test/badge.svg)](https://github.com/NicklasWallgren/bankid/actions?query=workflow%3ATest)
+[![Reviewdog](https://github.com/NicklasWallgren/bankid/workflows/reviewdog/badge.svg)](https://github.com/NicklasWallgren/bankid/actions?query=workflow%3Areviewdog)
 [![Go Report Card](https://goreportcard.com/badge/github.com/stretchr/testify)](https://goreportcard.com/report/github.com/NicklasWallgren/bankid)
 [![GoDoc](https://godoc.org/github.com/NicklasWallgren/bankid?status.svg)](https://godoc.org/github.com/NicklasWallgren/bankid) 
 
@@ -16,7 +17,7 @@ go get github.com/NicklasWallgren/bankid
 ```
 
 # Supported versions
-We support the two major Go versions, which are 1.12 and 1.13 at the moment.
+We support the two major Go versions, which are 1.14 and 1.15 at the moment.
 
 # Features
 - Supports all v5 features
@@ -58,10 +59,6 @@ fmt.Println(response.Collect())
 ```bash
 go test -v -race $(go list ./... | grep -v vendor)
 ```
-
-## TODO
- - Add unit tests
- - Add validator translator
 
 ## Contributing
   - Fork it!
