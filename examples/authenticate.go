@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
+
 	"github.com/NicklasWallgren/bankid"
 	"github.com/NicklasWallgren/bankid/configuration"
 )
@@ -13,14 +15,13 @@ func main() {
 		configuration.GetResourcePath("certificates/test.crt"),
 		configuration.GetResourcePath("certificates/test.key"))
 
-	bankId := bankid.New(configuration)
+	bankID := bankid.New(configuration)
 
-	payload := bankid.AuthenticationPayload{PersonalNumber: "<INSERT PERSONAL NUMBER>", EndUserIp: "192.168.1.1"}
+	payload := bankid.AuthenticationPayload{PersonalNumber: "<INSERT PERSONAL NUMBER>", EndUserIP: "192.168.1.1"}
 
-	response, err := bankId.Authenticate(context.Background(), &payload)
-
+	response, err := bankID.Authenticate(context.Background(), &payload)
 	if err != nil {
-		if response := bankid.UnwrapErrorResponse(err); response != nil {
+		if response := unwrapAsErrorResponse(err); response != nil {
 			fmt.Printf("%s - %s \n", response.Details, response.ErrorCode)
 		}
 
@@ -29,4 +30,14 @@ func main() {
 	}
 
 	fmt.Println(response.Collect(context.Background()))
+}
+
+func unwrapAsErrorResponse(err error) *bankid.ErrorResponse {
+	var response bankid.ErrorResponse
+
+	if errors.Is(err, response) && errors.As(err, &response) {
+		return &response
+	}
+
+	return nil
 }

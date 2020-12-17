@@ -22,8 +22,8 @@ type Client interface {
 type client struct {
 	client        *http.Client
 	configuration *configuration.Configuration
-	encoder       Encoder
-	decoder       Decoder
+	encoder       encoder
+	decoder       decoder
 }
 
 // Option definition.
@@ -33,7 +33,7 @@ type Option func(*client)
 func newClient(configuration *configuration.Configuration, options ...Option) (Client, error) {
 	clientCfg, err := newTLSClientConfig(configuration)
 	if err != nil {
-		return nil, fmt.Errorf("error reading and/or parsing the certification files. Cause: %s", err)
+		return nil, fmt.Errorf("error reading and/or parsing the certification files. Cause: %w", err)
 	}
 
 	netClient := http.Client{
@@ -76,7 +76,7 @@ func (c client) call(ctx context.Context, request Request, bankID *BankID) (Resp
 		return nil, err
 	}
 
-	defer resp.Body.Close()
+	defer resp.Body.Close() // nolint:errcheck
 
 	return c.decoder.decode(request.Response(), resp, bankID)
 }

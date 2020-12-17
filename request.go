@@ -1,5 +1,6 @@
 package bankid
 
+// Request is the interface implemented by types that holds the request context fields.
 type Request interface {
 	URI() string
 	Payload() Payload

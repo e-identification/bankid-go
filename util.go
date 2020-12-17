@@ -9,16 +9,6 @@ import (
 	"runtime"
 )
 
-func UnwrapErrorResponse(err error) *ErrorResponse {
-	var response *ErrorResponse
-
-	if errors.As(err, &response) {
-		return response
-	}
-
-	return nil
-}
-
 func isValidHTTPResponse(statusCode int, httpStatusCodes []int) bool {
 	for _, validStatusCode := range httpStatusCodes {
 		if statusCode == validStatusCode {
@@ -28,7 +18,7 @@ func isValidHTTPResponse(statusCode int, httpStatusCodes []int) bool {
 	return false
 }
 
-func isHttpStatusCodeWithinRange(statusCode int, statusCodeRange statusCodeRange) bool {
+func isHTTPStatusCodeWithinRange(statusCode int, statusCodeRange statusCodeRange) bool {
 	return statusCode >= statusCodeRange.start && statusCode <= statusCodeRange.end
 }
 

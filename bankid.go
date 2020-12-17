@@ -12,7 +12,7 @@ import (
 type BankID struct {
 	validator     *validator.Validate
 	configuration *configuration.Configuration
-	client        *Client
+	client        Client
 }
 
 // New returns a new instance of 'BankID'.
@@ -90,7 +90,7 @@ func (b *BankID) call(context context.Context, request Request) (Response, error
 		return nil, err
 	}
 
-	return (*b.client).call(context, request, b)
+	return b.client.call(context, request, b)
 }
 
 // initialize prepares the client in head of a request.
@@ -106,7 +106,7 @@ func (b *BankID) initialize() error {
 		return err
 	}
 
-	b.client = &client
+	b.client = client
 
 	return nil
 }

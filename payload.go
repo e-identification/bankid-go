@@ -8,7 +8,7 @@ import (
 // Payload is the interface implemented by types that holds the fields to be delivered to the API.
 type Payload interface{}
 
-// Requirements holds the required and optional fields of the Requirement DTO.
+// Requirement holds the required and optional fields of the Requirement DTO.
 type Requirement struct {
 	CardReader             string `validate:"omitempty,len=10" json:"cardReader,omitempty"`
 	CertificatePolicies    string `validate:"omitempty,len=10" json:"certificatePolicies,omitempty"`

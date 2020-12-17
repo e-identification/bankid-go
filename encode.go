@@ -2,13 +2,13 @@ package bankid
 
 import "encoding/json"
 
-type Encoder interface {
+type encoder interface {
 	encode(payload Payload) ([]byte, error)
 }
 
 type jsonEncoder struct{}
 
-func newJSONEncoder() Encoder {
+func newJSONEncoder() encoder {
 	return &jsonEncoder{}
 }
 

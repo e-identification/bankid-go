@@ -31,7 +31,7 @@ func newTLSClientConfig(configuration *configuration.Configuration) (*tls.Config
 }
 
 func createCertPool(certificatePath string) (*x509.CertPool, error) {
-	ca, err := ioutil.ReadFile(certificatePath)
+	ca, err := ioutil.ReadFile(certificatePath) // #nosec G304
 	if err != nil {
 		return nil, fmt.Errorf("unable to parse certificate %w", err)
 	}

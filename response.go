@@ -8,36 +8,44 @@ import (
 )
 
 const (
-	// The order is being processed. hintCode describes the status of the order.
+	// StatusPending is the status of a pending order. hintCode describes the status of the order.
 	StatusPending = "pending"
-	// The order is complete. completionData holds user information.
-	StatusComplete = "failed"
-	// Something went wrong with the order. hintCode describes the error.
-	StatusFailed = "complete"
-	// The order is pending. The client has not yet received the order.
+	// StatusComplete is the status of a complete order. completionData holds user information.
+	StatusComplete = "complete"
+	// StatusFailed is the status of a failed order. hintCode describes the error.
+	StatusFailed = "failed"
+	// HintCodeOutstandingTransaction is the hint for a order that is pending. The client has not yet received the order.
 	// The hintCode will later change to noClient, started or userSign.
 	HintCodeOutstandingTransaction = "outstandingTransaction"
-	// The order is pending. The client has not yet received the order.
+	// HintCodeNoClient is the hint for a order that is pending. The client has not yet received the order.
 	HintCodeNoClient = "noClient"
-	// The order is pending. A Client has started with the 'autostarttoken' but a usable ID has not yet been found in the started client.
+	// HintCodeStarted is the hint for a order that is pending. A Client has started with the 'autostarttoken' but a usable ID has not yet been found in the started client.
 	// When the client start the may be a short delay until all ID:s are registered.
 	// The user may not have any usable ID:s at all, or has not yet inserted their smart card.
-	HintCodeStarted            = "started"
-	HintCodeUserSign           = "userSign"
+	HintCodeStarted = "started"
+	// HintCodeUserSign is the hint for a order that is pending. A client has received the order.
+	HintCodeUserSign = "userSign"
+	// HintCodeExpiredTransaction is the hint for a order that has expired.
 	HintCodeExpiredTransaction = "expiredTransaction"
-	HintCodeCertificateError   = "certificateErr"
-	HintCodeUserCancel         = "userCancel"
-	HintCodeCancelled          = "cancelled"
-	HintCodeStartFailed        = "startFailed"
-	// An auth or sign request with personal number was sent, but an order for the user is already in progress. The order is aborted. No order is created.
+	// HintCodeCertificateError is a hint for when the provided certificate is invalid.
+	HintCodeCertificateError = "certificateErr"
+	// HintCodeUserCancel is a hint for when a user has cancelled a order.
+	HintCodeUserCancel = "userCancel"
+	// HintCodeCancelled is a hint for a order that has been cancelled.
+	HintCodeCancelled = "cancelled"
+	// HintCodeStartFailed is a hint for when a order could not be initialized.
+	HintCodeStartFailed = "startFailed"
+	// ErrorAlreadyInProgress is the hint for a order where an auth or sign request with personal number was sent, but an order for the user is already in progress. The order is aborted. No order is created.
 	// Details are found in details.
 	ErrorAlreadyInProgress = "alreadyInProgress"
 )
 
+// Response is the interface implemented by types that holds the response context fields.
 type Response interface {
 	Decode(subject io.ReadCloser, bankID *BankID) (Response, error)
 }
 
+// AuthenticateResponse contains the fields specific for the authentication response.
 type AuthenticateResponse struct {
 	// Used as reference to this order when the client is started automatically.
 	AutoStartToken string `json:"autoStartToken"`
@@ -77,6 +85,7 @@ func (a AuthenticateResponse) Cancel(context context.Context) (*CancelResponse, 
 	return a.bankID.Cancel(context, &CancelPayload{OrderRef: a.OrderRef})
 }
 
+// SignResponse contains the fields specific for the sign response.
 type SignResponse struct {
 	AuthenticateResponse
 }
@@ -93,11 +102,12 @@ func (s *SignResponse) Decode(subject io.ReadCloser, bankID *BankID) (Response, 
 	return s, nil
 }
 
+// CollectResponse contains the fields specific for the collect response.
 type CollectResponse struct {
 	OrderRef       string         `json:"orderRef"`
 	Status         string         `json:"status"`
 	HintCode       string         `json:"hintCode"`
-	CompletionData CompletionData `json:"completionData"`
+	CompletionData completionData `json:"completionData"`
 }
 
 func (c CollectResponse) String() string {
@@ -129,6 +139,7 @@ func (c *CollectResponse) Decode(subject io.ReadCloser, bankID *BankID) (Respons
 	return c, nil
 }
 
+// CancelResponse contrains fields for the cancel response.
 type CancelResponse struct{}
 
 // Decode reads the JSON-encoded value and stories it in a cancel response struct.
@@ -141,6 +152,7 @@ func (c *CancelResponse) Decode(subject io.ReadCloser, bankID *BankID) (Response
 	return c, nil
 }
 
+// ErrorResponse contrains fields fpr the error response.
 type ErrorResponse struct {
 	ErrorCode string `json:"errorCode"`
 	Details   string `json:"details"`
@@ -151,7 +163,7 @@ func (e *ErrorResponse) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
-func (e *ErrorResponse) Error() string {
+func (e ErrorResponse) Error() string {
 	return fmt.Sprintf("%s. %s", e.ErrorCode, e.Details)
 }
 
@@ -167,13 +179,13 @@ func (e *ErrorResponse) Decode(subject io.ReadCloser, bankID *BankID) (Response,
 	return e, nil
 }
 
-type CompletionData struct {
+type completionData struct {
 	// Information related to the user
-	User User `json:"user"`
+	User user `json:"user"`
 	// Information related to the device
-	Device Device `json:"device"`
+	Device device `json:"device"`
 	// Information related to the users certificate (BankID)
-	Cert Cert `  json:"cert"`
+	Cert cert `  json:"cert"`
 	// The content of the signature is described in BankID Signature Profile specification. String. Base64-encoded
 	Signature string `json:"signature"`
 	// The OCSP response. String. Base64-encoded. The OCSP response is signed by a certificate that has the same issuer
@@ -181,7 +193,7 @@ type CompletionData struct {
 	OcspResponse string `json:"ocspResponse"`
 }
 
-type User struct {
+type user struct {
 	// The personal number
 	PersonalNumber string `json:"personalNumber"`
 	// The given name and surname of the user
@@ -192,12 +204,12 @@ type User struct {
 	Surname string `json:"surname"`
 }
 
-type Device struct {
+type device struct {
 	// The IP address of the user agent as the BankID server discovers it.
 	IPAddress string `json:"ipAddress"`
 }
 
-type Cert struct {
+type cert struct {
 	// Start of validity of the users BankID.
 	NotBefore string `json:"notBefore"`
 	// End of validity of the Users BankID.
