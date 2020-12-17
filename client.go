@@ -3,16 +3,15 @@ package bankid
 import (
 	"context"
 	"fmt"
-	"github.com/NicklasWallgren/bankid/configuration"
 	"io"
 	"net/http"
 	"strings"
+
+	"github.com/NicklasWallgren/bankid/configuration"
 )
 
-var (
-	// The known API endpoints status codes.
-	httpStatusCodes = []int{200, 400, 401, 403, 404, 408, 415, 500, 503}
-)
+// The known API endpoints status codes.
+var httpStatusCodes = []int{200, 400, 401, 403, 404, 408, 415, 500, 503}
 
 // Client is the interface implemented by types that can invoke the BankID REST API.
 type Client interface {
@@ -33,7 +32,6 @@ type Option func(*client)
 // newClient returns a new instance of 'newClient'.
 func newClient(configuration *configuration.Configuration, options ...Option) (Client, error) {
 	clientCfg, err := newTLSClientConfig(configuration)
-
 	if err != nil {
 		return nil, fmt.Errorf("error reading and/or parsing the certification files. Cause: %s", err)
 	}
@@ -64,7 +62,6 @@ func withHTTPClient(target *http.Client) Option {
 // call is responsible for making the HTTP call against BankID REST API.
 func (c client) call(ctx context.Context, request Request, bankID *BankID) (*Response, error) {
 	encoded, err := c.encoder.encode(request.Payload())
-
 	if err != nil {
 		return nil, fmt.Errorf("unable to encode payload %w", err)
 	}
@@ -89,7 +86,11 @@ func (c client) newRequest(context context.Context, url string, body io.Reader) 
 	req, err := http.NewRequestWithContext(context, "POST", url, body)
 	req.Header.Add("Content-Type", "application/json")
 
-	return req, fmt.Errorf("unable to build request %w", err)
+	if err != nil {
+		return nil, fmt.Errorf("unable to build request %w", err)
+	}
+
+	return req, nil
 }
 
 func (c client) urlFrom(request Request) string {

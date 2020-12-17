@@ -44,7 +44,6 @@ func getResourceDirectoryPath() (directory string, err error) {
 
 func getResourcePath(path string) (directory string) {
 	dir, err := getResourceDirectoryPath()
-
 	if err != nil {
 		panic(err)
 	}

@@ -3,6 +3,7 @@ package bankid
 import (
 	"context"
 	"fmt"
+
 	"github.com/NicklasWallgren/bankid/configuration"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -26,7 +27,6 @@ func New(configuration *configuration.Configuration) *BankID {
 func (b BankID) Authenticate(context context.Context, payload *AuthenticationPayload) (*AuthenticateResponse, error) {
 	request := newAuthenticationRequest(payload)
 	response, err := b.call(context, request)
-
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,6 @@ func (b BankID) Authenticate(context context.Context, payload *AuthenticationPay
 func (b BankID) Sign(context context.Context, payload *SignPayload) (*SignResponse, error) {
 	request := newSignRequest(payload)
 	response, err := b.call(context, request)
-
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +57,6 @@ func (b BankID) Sign(context context.Context, payload *SignPayload) (*SignRespon
 func (b BankID) Collect(context context.Context, payload *CollectPayload) (*CollectResponse, error) {
 	request := newCollectRequest(payload)
 	response, err := b.call(context, request)
-
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +71,6 @@ func (b BankID) Collect(context context.Context, payload *CollectPayload) (*Coll
 func (b BankID) Cancel(context context.Context, payload *CancelPayload) (*CancelResponse, error) {
 	request := newCancelRequest(payload)
 	response, err := b.call(context, request)
-
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +102,6 @@ func (b *BankID) initialize() error {
 
 	// Lazy initialization
 	client, err := newClient(b.configuration)
-
 	if err != nil {
 		return err
 	}

@@ -53,7 +53,6 @@ func (a *AuthenticateResponse) String() string {
 // Decode reads the JSON-encoded value and stories it in a authenticate response struct.
 func (a *AuthenticateResponse) Decode(subject io.ReadCloser, bankID *BankID) (Response, error) {
 	err := decode(subject, &a)
-
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +84,6 @@ type SignResponse struct {
 // Decode reads the JSON-encoded value and stories it in a sign response struct.
 func (s *SignResponse) Decode(subject io.ReadCloser, bankID *BankID) (Response, error) {
 	err := decode(subject, &s)
-
 	if err != nil {
 		return nil, err
 	}
@@ -124,7 +122,6 @@ func (c CollectResponse) IsComplete() bool {
 // Decode reads the JSON-encoded value and stories it in a collect response struct.
 func (c *CollectResponse) Decode(subject io.ReadCloser, bankID *BankID) (Response, error) {
 	err := decode(subject, &c)
-
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +134,6 @@ type CancelResponse struct{}
 // Decode reads the JSON-encoded value and stories it in a cancel response struct.
 func (c *CancelResponse) Decode(subject io.ReadCloser, bankID *BankID) (Response, error) {
 	err := decode(subject, &c)
-
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +158,6 @@ func (e *ErrorResponse) Error() string {
 // Decode reads the JSON-encoded value and stories it in a error response struct.
 func (e *ErrorResponse) Decode(subject io.ReadCloser, bankID *BankID) (Response, error) {
 	err := decode(subject, &e)
-
 	if err != nil {
 		return nil, err
 	}

@@ -3,15 +3,16 @@ package bankid
 import (
 	"context"
 	"crypto/tls"
-	"github.com/NicklasWallgren/bankid/configuration"
-	"github.com/stretchr/testify/assert"
-	"gopkg.in/go-playground/validator.v9"
 	"io"
 	"net"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/NicklasWallgren/bankid/configuration"
+	"github.com/stretchr/testify/assert"
+	"gopkg.in/go-playground/validator.v9"
 )
 
 func TestAuthenticate(t *testing.T) {
@@ -21,7 +22,6 @@ func TestAuthenticate(t *testing.T) {
 	payload := &AuthenticationPayload{PersonalNumber: "123456789123", EndUserIP: "192.168.1.1"}
 
 	response, err := bankID.Authenticate(context.Background(), payload)
-
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -37,7 +37,6 @@ func TestSign(t *testing.T) {
 	payload := &SignPayload{PersonalNumber: "123456789123", EndUserIP: "192.168.1.1", UserVisibleData: "Test", Requirement: &Requirement{CardReader: ""}}
 
 	response, err := bankID.Sign(context.Background(), payload)
-
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -68,7 +67,6 @@ func TestCollect(t *testing.T) {
 	payload := &CollectPayload{OrderRef: ""}
 
 	response, err := bankID.Collect(context.Background(), payload)
-
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -78,7 +76,6 @@ func TestCollect(t *testing.T) {
 }
 
 func TestCancel(t *testing.T) {
-
 }
 
 func testClient(handler http.HandlerFunc) (*BankID, func()) {
@@ -112,7 +109,6 @@ func testHTTPClient(handler http.Handler) (*http.Client, func()) {
 
 func fileToResponseHandler(t *testing.T, filename string) http.HandlerFunc {
 	file, err := os.Open(filename)
-
 	if err != nil {
 		panic(err)
 	}

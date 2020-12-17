@@ -4,19 +4,18 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"github.com/NicklasWallgren/bankid/configuration"
 	"io/ioutil"
+
+	"github.com/NicklasWallgren/bankid/configuration"
 )
 
 func newTLSClientConfig(configuration *configuration.Configuration) (*tls.Config, error) {
 	caPool, err := createCertPool(configuration.Environment.CertificationFilePath)
-
 	if err != nil {
 		return nil, err
 	}
 
 	rpCert, err := createCertLeaf(configuration)
-
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +32,6 @@ func newTLSClientConfig(configuration *configuration.Configuration) (*tls.Config
 
 func createCertPool(certificatePath string) (*x509.CertPool, error) {
 	ca, err := ioutil.ReadFile(certificatePath)
-
 	if err != nil {
 		return nil, fmt.Errorf("unable to parse certificate %w", err)
 	}
@@ -48,7 +46,6 @@ func createCertPool(certificatePath string) (*x509.CertPool, error) {
 
 func createCertLeaf(configuration *configuration.Configuration) (*tls.Certificate, error) {
 	rpCert, err := tls.LoadX509KeyPair(configuration.CertFile, configuration.KeyFile)
-
 	if err != nil {
 		return nil, fmt.Errorf("unable to load certificate %w", err)
 	}
