@@ -8,7 +8,7 @@ type Encoder interface {
 
 type jsonEncoder struct{}
 
-func newJsonEncoder() Encoder {
+func newJSONEncoder() Encoder {
 	return &jsonEncoder{}
 }
 

@@ -21,6 +21,7 @@ func newTLSClientConfig(configuration *configuration.Configuration) (*tls.Config
 		return nil, err
 	}
 
+	// #nosec G402
 	clientCfg := &tls.Config{
 		Certificates: []tls.Certificate{*rpCert},
 		ClientCAs:    caPool,
@@ -34,7 +35,7 @@ func createCertPool(certificatePath string) (*x509.CertPool, error) {
 	ca, err := ioutil.ReadFile(certificatePath)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to parse certificate %w", err)
 	}
 
 	caPool := x509.NewCertPool()
@@ -49,7 +50,7 @@ func createCertLeaf(configuration *configuration.Configuration) (*tls.Certificat
 	rpCert, err := tls.LoadX509KeyPair(configuration.CertFile, configuration.KeyFile)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to load certificate %w", err)
 	}
 
 	return &rpCert, nil

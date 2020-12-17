@@ -9,7 +9,7 @@ import (
 )
 
 type Environment struct {
-	BaseUrl               string
+	BaseURL               string
 	CertificationFilePath string
 }
 
@@ -31,10 +31,10 @@ func New(environment *Environment, certFile string, keyFile string, options ...O
 	return instance
 }
 
-// Option definition
+// Option definition.
 type Option func(*Configuration)
 
-// Function to create Option func to set the timeout limit
+// Function to create Option func to set the timeout limit.
 // nolint:deadcode, unused
 func setTimeout(timeout time.Duration) Option {
 	return func(subject *Configuration) {
@@ -43,8 +43,8 @@ func setTimeout(timeout time.Duration) Option {
 }
 
 var (
-	TestEnvironment       = Environment{BaseUrl: "https://appapi2.test.bankid.com/rp/v5", CertificationFilePath: GetResourcePath("certificates/ca.test.crt")}
-	ProductionEnvironment = Environment{BaseUrl: "https://appapi2.bankid.com/rp/v5", CertificationFilePath: GetResourcePath("certificates/ca.prod.crt")}
+	TestEnvironment       = Environment{BaseURL: "https://appapi2.test.bankid.com/rp/v5", CertificationFilePath: GetResourcePath("certificates/ca.test.crt")}
+	ProductionEnvironment = Environment{BaseURL: "https://appapi2.bankid.com/rp/v5", CertificationFilePath: GetResourcePath("certificates/ca.prod.crt")}
 )
 
 func GetResourceDirectoryPath() (directory string, err error) {

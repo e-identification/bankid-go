@@ -10,7 +10,7 @@ import (
 const (
 	// The order is being processed. hintCode describes the status of the order.
 	StatusPending = "pending"
-	// The order is complete. completionData holds user information
+	// The order is complete. completionData holds user information.
 	StatusComplete = "failed"
 	// Something went wrong with the order. hintCode describes the error.
 	StatusFailed = "complete"
@@ -35,7 +35,7 @@ const (
 )
 
 type Response interface {
-	Decode(subject io.ReadCloser, bankId *BankId) (Response, error)
+	Decode(subject io.ReadCloser, bankID *BankID) (Response, error)
 }
 
 type AuthenticateResponse struct {
@@ -43,22 +43,22 @@ type AuthenticateResponse struct {
 	AutoStartToken string `json:"autoStartToken"`
 	// Used to collect the status of the order.
 	OrderRef string `json:"orderRef"`
-	bankId   *BankId
+	bankID   *BankID
 }
 
 func (a *AuthenticateResponse) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// Decode reads the JSON-encoded value and stories it in a authenticate response struct
-func (a *AuthenticateResponse) Decode(subject io.ReadCloser, bankId *BankId) (Response, error) {
+// Decode reads the JSON-encoded value and stories it in a authenticate response struct.
+func (a *AuthenticateResponse) Decode(subject io.ReadCloser, bankID *BankID) (Response, error) {
 	err := decode(subject, &a)
 
 	if err != nil {
 		return nil, err
 	}
 
-	a.bankId = bankId
+	a.bankID = bankID
 
 	return a, nil
 }
@@ -68,29 +68,29 @@ func (a *AuthenticateResponse) Decode(subject io.ReadCloser, bankId *BankId) (Re
 // RP should keep calling collect every two seconds as long as status indicates pending.
 // RP must abort if status indicates failed. The user identity is returned when complete.
 func (a AuthenticateResponse) Collect(context context.Context) (*CollectResponse, error) {
-	return a.bankId.Collect(context, &CollectPayload{OrderRef: a.OrderRef})
+	return a.bankID.Collect(context, &CollectPayload{OrderRef: a.OrderRef})
 }
 
 // Cancel - Cancels an ongoing sign or auth order.
 //
 // This is typically used if the user cancels the order in your service or app.
 func (a AuthenticateResponse) Cancel(context context.Context) (*CancelResponse, error) {
-	return a.bankId.Cancel(context, &CancelPayload{OrderRef: a.OrderRef})
+	return a.bankID.Cancel(context, &CancelPayload{OrderRef: a.OrderRef})
 }
 
 type SignResponse struct {
 	AuthenticateResponse
 }
 
-// Decode reads the JSON-encoded value and stories it in a sign response struct
-func (s *SignResponse) Decode(subject io.ReadCloser, bankId *BankId) (Response, error) {
+// Decode reads the JSON-encoded value and stories it in a sign response struct.
+func (s *SignResponse) Decode(subject io.ReadCloser, bankID *BankID) (Response, error) {
 	err := decode(subject, &s)
 
 	if err != nil {
 		return nil, err
 	}
 
-	s.bankId = bankId
+	s.bankID = bankID
 
 	return s, nil
 }
@@ -121,13 +121,8 @@ func (c CollectResponse) IsComplete() bool {
 	return c.Status == StatusComplete
 }
 
-// IsAlreadyInProgress returns true if the order is already in progress.
-//func (c CollectResponse) IsAlreadyInProgress() bool {
-//	return a.ErrorCode == ErrorAlreadyInProgress
-//}
-
-// Decode reads the JSON-encoded value and stories it in a collect response struct
-func (c *CollectResponse) Decode(subject io.ReadCloser, bankId *BankId) (Response, error) {
+// Decode reads the JSON-encoded value and stories it in a collect response struct.
+func (c *CollectResponse) Decode(subject io.ReadCloser, bankID *BankID) (Response, error) {
 	err := decode(subject, &c)
 
 	if err != nil {
@@ -139,8 +134,8 @@ func (c *CollectResponse) Decode(subject io.ReadCloser, bankId *BankId) (Respons
 
 type CancelResponse struct{}
 
-// Decode reads the JSON-encoded value and stories it in a cancel response struct
-func (c *CancelResponse) Decode(subject io.ReadCloser, bankId *BankId) (Response, error) {
+// Decode reads the JSON-encoded value and stories it in a cancel response struct.
+func (c *CancelResponse) Decode(subject io.ReadCloser, bankID *BankID) (Response, error) {
 	err := decode(subject, &c)
 
 	if err != nil {
@@ -153,7 +148,7 @@ func (c *CancelResponse) Decode(subject io.ReadCloser, bankId *BankId) (Response
 type ErrorResponse struct {
 	ErrorCode string `json:"errorCode"`
 	Details   string `json:"details"`
-	bankId    *BankId
+	bankID    *BankID
 }
 
 func (e *ErrorResponse) String() string {
@@ -164,15 +159,15 @@ func (e *ErrorResponse) Error() string {
 	return fmt.Sprintf("%s. %s", e.ErrorCode, e.Details)
 }
 
-// Decode reads the JSON-encoded value and stories it in a error response struct
-func (e *ErrorResponse) Decode(subject io.ReadCloser, bankId *BankId) (Response, error) {
+// Decode reads the JSON-encoded value and stories it in a error response struct.
+func (e *ErrorResponse) Decode(subject io.ReadCloser, bankID *BankID) (Response, error) {
 	err := decode(subject, &e)
 
 	if err != nil {
 		return nil, err
 	}
 
-	e.bankId = bankId
+	e.bankID = bankID
 
 	return e, nil
 }
@@ -186,8 +181,8 @@ type CompletionData struct {
 	Cert Cert `  json:"cert"`
 	// The content of the signature is described in BankID Signature Profile specification. String. Base64-encoded
 	Signature string `json:"signature"`
-	//The OCSP response. String. Base64-encoded. The OCSP response is signed by a certificate that has the same issuer
-	//as the certificate being verified. The OSCP response has an extension for Nonce
+	// The OCSP response. String. Base64-encoded. The OCSP response is signed by a certificate that has the same issuer
+	// as the certificate being verified. The OSCP response has an extension for Nonce
 	OcspResponse string `json:"ocspResponse"`
 }
 
@@ -204,7 +199,7 @@ type User struct {
 
 type Device struct {
 	// The IP address of the user agent as the BankID server discovers it.
-	IpAddress string `json:"ipAddress"`
+	IPAddress string `json:"ipAddress"`
 }
 
 type Cert struct {

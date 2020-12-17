@@ -1,18 +1,7 @@
 package bankid
 
-const (
-	// The authentication URI
-	UriAuth = "auth"
-	// The sign URI
-	UriSign = "sign"
-	// The collect URI
-	UriCollect = "collect"
-	// The cancel URI
-	UriCancel = "cancel"
-)
-
 type Request interface {
-	Uri() string
+	URI() string
 	Payload() Payload
 	Response() Response
 }
@@ -23,7 +12,7 @@ type request struct {
 	response Response
 }
 
-func (r request) Uri() string {
+func (r request) URI() string {
 	return r.uri
 }
 
@@ -35,22 +24,22 @@ func (r request) Response() Response {
 	return r.response
 }
 
-// newAuthenticationRequest returns a new instance of 'Request'
+// newAuthenticationRequest returns a new instance of 'Request'.
 func newAuthenticationRequest(payload *AuthenticationPayload) Request {
-	return &request{uri: UriAuth, payload: payload, response: &AuthenticateResponse{}}
+	return &request{uri: "auth", payload: payload, response: &AuthenticateResponse{}}
 }
 
-// newSignRequest returns a new instance of 'signRequest'
+// newSignRequest returns a new instance of 'signRequest'.
 func newSignRequest(payload *SignPayload) Request {
-	return &request{uri: UriSign, payload: payload, response: &SignResponse{}}
+	return &request{uri: "sign", payload: payload, response: &SignResponse{}}
 }
 
-// newCollectRequest returns a new instance of 'CollectRequest'
+// newCollectRequest returns a new instance of 'CollectRequest'.
 func newCollectRequest(payload *CollectPayload) Request {
-	return &request{uri: UriCollect, payload: payload, response: &CollectResponse{}}
+	return &request{uri: "collect", payload: payload, response: &CollectResponse{}}
 }
 
-// newCancelRequest returns a new instance of 'CancelRequest'
+// newCancelRequest returns a new instance of 'CancelRequest'.
 func newCancelRequest(payload *CancelPayload) Request {
-	return &request{uri: UriCancel, payload: payload, response: &CancelResponse{}}
+	return &request{uri: "cancel", payload: payload, response: &CancelResponse{}}
 }

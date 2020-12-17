@@ -2,27 +2,28 @@ package bankid
 
 import (
 	"context"
+	"fmt"
 	"github.com/NicklasWallgren/bankid/configuration"
 	"gopkg.in/go-playground/validator.v9"
 )
 
-// BankId contains the validator and configuration context
-type BankId struct {
+// BankID contains the validator and configuration context.
+type BankID struct {
 	validator     *validator.Validate
 	configuration *configuration.Configuration
 	client        *Client
 }
 
-// New returns a new instance of 'BankId'
-func New(configuration *configuration.Configuration) *BankId {
-	return &BankId{validator: newValidator(), configuration: configuration}
+// New returns a new instance of 'BankID'.
+func New(configuration *configuration.Configuration) *BankID {
+	return &BankID{validator: newValidator(), configuration: configuration}
 }
 
 // Authenticate - Initiates an authentication order.
 //
 // Use the collect method to query the status of the order.
 // If the request is successful, the orderRef and autoStartToken is returned.
-func (b BankId) Authenticate(context context.Context, payload *AuthenticationPayload) (*AuthenticateResponse, error) {
+func (b BankID) Authenticate(context context.Context, payload *AuthenticationPayload) (*AuthenticateResponse, error) {
 	request := newAuthenticationRequest(payload)
 	response, err := b.call(context, request)
 
@@ -38,7 +39,7 @@ func (b BankId) Authenticate(context context.Context, payload *AuthenticationPay
 //
 // Use the collect method to query the status of the order.
 // If the request is successful, the orderRef and autoStartToken is returned.
-func (b BankId) Sign(context context.Context, payload *SignPayload) (*SignResponse, error) {
+func (b BankID) Sign(context context.Context, payload *SignPayload) (*SignResponse, error) {
 	request := newSignRequest(payload)
 	response, err := b.call(context, request)
 
@@ -54,7 +55,7 @@ func (b BankId) Sign(context context.Context, payload *SignPayload) (*SignRespon
 //
 // RP should keep calling collect every two seconds as long as status indicates pending.
 // RP must abort if status indicates failed. The user identity is returned when complete.
-func (b BankId) Collect(context context.Context, payload *CollectPayload) (*CollectResponse, error) {
+func (b BankID) Collect(context context.Context, payload *CollectPayload) (*CollectResponse, error) {
 	request := newCollectRequest(payload)
 	response, err := b.call(context, request)
 
@@ -64,13 +65,12 @@ func (b BankId) Collect(context context.Context, payload *CollectPayload) (*Coll
 
 	collectResponse := (*response).(*CollectResponse)
 	return collectResponse, nil
-
 }
 
 // Cancel - Cancels an ongoing sign or auth order.
 //
 // This is typically used if the user cancels the order in your service or app.
-func (b BankId) Cancel(context context.Context, payload *CancelPayload) (*CancelResponse, error) {
+func (b BankID) Cancel(context context.Context, payload *CancelPayload) (*CancelResponse, error) {
 	request := newCancelRequest(payload)
 	response, err := b.call(context, request)
 
@@ -82,25 +82,22 @@ func (b BankId) Cancel(context context.Context, payload *CancelPayload) (*Cancel
 	return cancelResponse, nil
 }
 
-// call validates the prerequisites of the requests and invokes the REST API method
-func (b *BankId) call(context context.Context, request Request) (*Response, error) {
-	//context, cancel := context.WithTimeout(ctx, b.configuration.Timeout*time.Second)
-	//defer cancel()
-
+// call validates the prerequisites of the requests and invokes the REST API method.
+func (b *BankID) call(context context.Context, request Request) (*Response, error) {
 	// Validate the integrity of the Payload
 	if err := b.validator.Struct(request.Payload()); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("payload validation error %w", err)
 	}
 
 	if err := b.initialize(); err != nil {
 		return nil, err
 	}
 
-	return (*b.client).call(request, context, b)
+	return (*b.client).call(context, request, b)
 }
 
-// initialize prepares the client in head of a request
-func (b *BankId) initialize() error {
+// initialize prepares the client in head of a request.
+func (b *BankID) initialize() error {
 	// Check whether the client has been initialized
 	if b.client != nil {
 		return nil

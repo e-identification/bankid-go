@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"golang.org/x/xerrors"
 	"io"
 	"path"
 	"runtime"
@@ -13,14 +12,14 @@ import (
 func UnwrapErrorResponse(err error) *ErrorResponse {
 	var response *ErrorResponse
 
-	if xerrors.As(err, &response) {
+	if errors.As(err, &response) {
 		return response
 	}
 
 	return nil
 }
 
-func isValidHttpResponse(statusCode int, httpStatusCodes []int) bool {
+func isValidHTTPResponse(statusCode int, httpStatusCodes []int) bool {
 	for _, validStatusCode := range httpStatusCodes {
 		if statusCode == validStatusCode {
 			return true

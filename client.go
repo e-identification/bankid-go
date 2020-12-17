@@ -10,14 +10,14 @@ import (
 )
 
 var (
-	// The known API endpoints status codes
+	// The known API endpoints status codes.
 	httpStatusCodes = []int{200, 400, 401, 403, 404, 408, 415, 500, 503}
 )
 
-// Client is the interface implemented by types that can invoke the BankID REST API
+// Client is the interface implemented by types that can invoke the BankID REST API.
 type Client interface {
-	// call is responsible for making the HTTP call against BankId REST API
-	call(request Request, context context.Context, bankId *BankId) (*Response, error)
+	// call is responsible for making the HTTP call against BankID REST API
+	call(context context.Context, request Request, bankID *BankID) (*Response, error)
 }
 
 type client struct {
@@ -27,10 +27,10 @@ type client struct {
 	decoder       Decoder
 }
 
-// Option definition
+// Option definition.
 type Option func(*client)
 
-// newClient returns a new instance of 'newClient'
+// newClient returns a new instance of 'newClient'.
 func newClient(configuration *configuration.Configuration, options ...Option) (Client, error) {
 	clientCfg, err := newTLSClientConfig(configuration)
 
@@ -44,7 +44,7 @@ func newClient(configuration *configuration.Configuration, options ...Option) (C
 		},
 	}
 
-	instance := &client{client: &netClient, configuration: configuration, encoder: newJsonEncoder(), decoder: newJsonDecoder()}
+	instance := &client{client: &netClient, configuration: configuration, encoder: newJSONEncoder(), decoder: newJSONDecoder()}
 
 	// Apply options if there are any, can overwrite default
 	for _, option := range options {
@@ -54,47 +54,46 @@ func newClient(configuration *configuration.Configuration, options ...Option) (C
 	return instance, nil
 }
 
-// Function to create Option func to set net/http client
-func withHttpClient(target *http.Client) Option {
+// Function to create Option func to set net/http client.
+func withHTTPClient(target *http.Client) Option {
 	return func(subject *client) {
 		subject.client = target
 	}
 }
 
-// call is responsible for making the HTTP call against BankId REST API
-func (c client) call(request Request, context context.Context, bankId *BankId) (*Response, error) {
+// call is responsible for making the HTTP call against BankID REST API.
+func (c client) call(ctx context.Context, request Request, bankID *BankID) (*Response, error) {
 	encoded, err := c.encoder.encode(request.Payload())
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to encode payload %w", err)
 	}
 
-	req, err := c.newRequest(c.urlFrom(request), strings.NewReader(string(encoded)))
+	req, err := c.newRequest(ctx, c.urlFrom(request), strings.NewReader(string(encoded)))
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.request(req.WithContext(context))
+	resp, err := c.request(req)
 	if err != nil {
 		return nil, err
 	}
 
 	defer resp.Body.Close()
 
-	return c.decoder.decode(request.Response(), resp, bankId)
+	return c.decoder.decode(request.Response(), resp, bankID)
 }
 
-// newRequest creates and prepares a instance of http request
-func (c client) newRequest(url string, body io.Reader) (*http.Request, error) {
-	req, err := http.NewRequest("POST", url, body)
-
+// newRequest creates and prepares a instance of http request.
+func (c client) newRequest(context context.Context, url string, body io.Reader) (*http.Request, error) {
+	req, err := http.NewRequestWithContext(context, "POST", url, body)
 	req.Header.Add("Content-Type", "application/json")
 
-	return req, err
+	return req, fmt.Errorf("unable to build request %w", err)
 }
 
 func (c client) urlFrom(request Request) string {
-	return c.configuration.Environment.BaseUrl + "/" + request.Uri()
+	return c.configuration.Environment.BaseURL + "/" + request.URI()
 }
 
 func (c client) request(request *http.Request) (*http.Response, error) {
