@@ -31,7 +31,7 @@ func (b BankID) Authenticate(context context.Context, payload *AuthenticationPay
 		return nil, err
 	}
 
-	authenticateResponse := (*response).(*AuthenticateResponse)
+	authenticateResponse := (response).(*AuthenticateResponse)
 	return authenticateResponse, nil
 }
 
@@ -46,7 +46,7 @@ func (b BankID) Sign(context context.Context, payload *SignPayload) (*SignRespon
 		return nil, err
 	}
 
-	signResponse := (*response).(*SignResponse)
+	signResponse := (response).(*SignResponse)
 	return signResponse, nil
 }
 
@@ -61,7 +61,7 @@ func (b BankID) Collect(context context.Context, payload *CollectPayload) (*Coll
 		return nil, err
 	}
 
-	collectResponse := (*response).(*CollectResponse)
+	collectResponse := (response).(*CollectResponse)
 	return collectResponse, nil
 }
 
@@ -75,12 +75,12 @@ func (b BankID) Cancel(context context.Context, payload *CancelPayload) (*Cancel
 		return nil, err
 	}
 
-	cancelResponse := (*response).(*CancelResponse)
+	cancelResponse := (response).(*CancelResponse)
 	return cancelResponse, nil
 }
 
 // call validates the prerequisites of the requests and invokes the REST API method.
-func (b *BankID) call(context context.Context, request Request) (*Response, error) {
+func (b *BankID) call(context context.Context, request Request) (Response, error) {
 	// Validate the integrity of the Payload
 	if err := b.validator.Struct(request.Payload()); err != nil {
 		return nil, fmt.Errorf("payload validation error %w", err)

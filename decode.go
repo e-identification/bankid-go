@@ -11,7 +11,7 @@ var (
 )
 
 type Decoder interface {
-	decode(subject Response, response *http.Response, bankID *BankID) (*Response, error)
+	decode(subject Response, response *http.Response, bankID *BankID) (Response, error)
 }
 
 type jsonDecoder struct{}
@@ -20,7 +20,7 @@ func newJSONDecoder() Decoder {
 	return &jsonDecoder{}
 }
 
-func (j jsonDecoder) decode(subject Response, response *http.Response, bankID *BankID) (*Response, error) {
+func (j jsonDecoder) decode(subject Response, response *http.Response, bankID *BankID) (Response, error) {
 	if !isValidHTTPResponse(response.StatusCode, httpStatusCodes) {
 		return nil, fmt.Errorf("invalid http response. Http Code: %d. Body: %s", response.StatusCode, readCloserToString(response.Body))
 	}
@@ -31,7 +31,7 @@ func (j jsonDecoder) decode(subject Response, response *http.Response, bankID *B
 			return nil, fmt.Errorf("unable to decode response %w", err)
 		}
 
-		return &decoded, nil
+		return decoded, nil
 	}
 
 	if isHttpStatusCodeWithinRange(response.StatusCode, errorRange) {
@@ -43,7 +43,7 @@ func (j jsonDecoder) decode(subject Response, response *http.Response, bankID *B
 		return nil, fmt.Errorf("unable to decode response %w", err)
 	}
 
-	return &decoded, nil
+	return decoded, nil
 }
 
 func (j jsonDecoder) decodeError(response *http.Response, bankID *BankID) error {

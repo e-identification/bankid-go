@@ -16,7 +16,7 @@ var httpStatusCodes = []int{200, 400, 401, 403, 404, 408, 415, 500, 503}
 // Client is the interface implemented by types that can invoke the BankID REST API.
 type Client interface {
 	// call is responsible for making the HTTP call against BankID REST API
-	call(context context.Context, request Request, bankID *BankID) (*Response, error)
+	call(context context.Context, request Request, bankID *BankID) (Response, error)
 }
 
 type client struct {
@@ -60,7 +60,7 @@ func withHTTPClient(target *http.Client) Option {
 }
 
 // call is responsible for making the HTTP call against BankID REST API.
-func (c client) call(ctx context.Context, request Request, bankID *BankID) (*Response, error) {
+func (c client) call(ctx context.Context, request Request, bankID *BankID) (Response, error) {
 	encoded, err := c.encoder.encode(request.Payload())
 	if err != nil {
 		return nil, fmt.Errorf("unable to encode payload %w", err)
