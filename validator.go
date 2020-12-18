@@ -2,8 +2,9 @@ package bankid
 
 import (
 	"encoding/base64"
-	"gopkg.in/go-playground/validator.v9"
 	"strconv"
+
+	"gopkg.in/go-playground/validator.v9"
 )
 
 const (
@@ -21,10 +22,9 @@ func newValidator() *validator.Validate {
 	return instance
 }
 
-// validateBase64Length validates the length of a encoded string
+// validateBase64Length validates the length of a encoded string.
 func validateBase64Length(fl validator.FieldLevel) bool {
 	length, err := strconv.Atoi(fl.Param())
-
 	if err != nil {
 		return false
 	}

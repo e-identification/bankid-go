@@ -3,25 +3,41 @@ package bankid
 import (
 	"context"
 	"crypto/tls"
-	"github.com/NicklasWallgren/bankid/configuration"
-	"github.com/stretchr/testify/assert"
-	"gopkg.in/go-playground/validator.v9"
+	"errors"
 	"io"
 	"net"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/NicklasWallgren/bankid/configuration"
+	"github.com/stretchr/testify/assert"
+	"gopkg.in/go-playground/validator.v9"
 )
 
-func TestSign(t *testing.T) {
-	bankId, teardown := testClient(fileToResponseHandler(t, "resource/test_data/sign_response.json"))
+func TestAuthenticate(t *testing.T) {
+	bankID, teardown := testBankID(fileToResponseHandler(t, "resource/test_data/sign_response.json"))
 	defer teardown()
 
-	payload := &SignPayload{PersonalNumber: "123456789123", EndUserIp: "192.168.1.1", UserVisibleData: "Test", Requirement: &Requirement{CardReader: ""}}
+	payload := &AuthenticationPayload{PersonalNumber: "123456789123", EndUserIP: "192.168.1.1"}
 
-	response, err := bankId.Sign(context.Background(), payload)
+	response, err := bankID.Authenticate(context.Background(), payload)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if response == nil {
+		t.Fatal("Got nil response")
+	}
+}
 
+func TestSign(t *testing.T) {
+	bankID, teardown := testBankID(fileToResponseHandler(t, "resource/test_data/sign_response.json"))
+	defer teardown()
+
+	payload := &SignPayload{PersonalNumber: "123456789123", EndUserIP: "192.168.1.1", UserVisibleData: "Test", Requirement: &Requirement{CardReader: ""}}
+
+	response, err := bankID.Sign(context.Background(), payload)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,25 +50,29 @@ func TestSign(t *testing.T) {
 }
 
 func TestSignWithInvalidPayload(t *testing.T) {
-	bankId := New(&configuration.Configuration{})
+	bankID := New(&configuration.Configuration{})
 
-	payload := &SignPayload{PersonalNumber: "INVALID-PERSONAL-NUMBER", EndUserIp: "192.168.1.1", UserVisibleData: "Test", Requirement: &Requirement{CardReader: ""}}
-	_, err := bankId.Sign(context.Background(), payload)
+	payload := &SignPayload{PersonalNumber: "INVALID-PERSONAL-NUMBER", EndUserIP: "192.168.1.1", UserVisibleData: "Test", Requirement: &Requirement{CardReader: ""}}
+	_, err := bankID.Sign(context.Background(), payload)
 
-	validationErrors := err.(validator.ValidationErrors)
+	var validationErrors validator.ValidationErrors
+
+	if !errors.As(err, &validationErrors) {
+		t.Error("Invalid error type")
+	}
+
 	fieldError := validationErrors[0]
 	assert.Equal(t, "PersonalNumber", fieldError.Field())
 	assert.Equal(t, "numeric", fieldError.Tag())
 }
 
 func TestCollect(t *testing.T) {
-	bankId, teardown := testClient(fileToResponseHandler(t, "resource/test_data/collect_response.json"))
+	bankID, teardown := testBankID(fileToResponseHandler(t, "resource/test_data/collect_response.json"))
 	defer teardown()
 
 	payload := &CollectPayload{OrderRef: ""}
 
-	response, err := bankId.Collect(context.Background(), payload)
-
+	response, err := bankID.Collect(context.Background(), payload)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -61,17 +81,34 @@ func TestCollect(t *testing.T) {
 	}
 }
 
-func testClient(handler http.HandlerFunc) (*BankId, func()) {
+func TestCancel(t *testing.T) {
+	bankID, teardown := testBankID(stringToResponseHandler(t, "{}"))
+	defer teardown()
+
+	payload := &CancelPayload{OrderRef: ""}
+
+	response, err := bankID.Cancel(context.Background(), payload)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if response == nil {
+		t.Fatal("Got nil response")
+	}
+}
+
+// Returns a bankID whose requests will always return
+// a response configured by the handler.
+func testBankID(handler http.HandlerFunc) (*BankID, func()) {
 	configuration := configuration.New(&configuration.TestEnvironment, getResourcePath("certificates/test.crt"), getResourcePath("certificates/test.key"))
 
-	bankId := New(configuration)
+	bankID := New(configuration)
 
 	httpClient, teardown := testHTTPClient(handler)
 
-	client, _ := newClient(configuration, withHttpClient(httpClient))
-	bankId.client = &client
+	client, _ := newClient(configuration, withHTTPClient(httpClient))
+	bankID.client = client
 
-	return bankId, teardown
+	return bankID, teardown
 }
 
 func testHTTPClient(handler http.Handler) (*http.Client, func()) {
@@ -82,6 +119,7 @@ func testHTTPClient(handler http.Handler) (*http.Client, func()) {
 			DialContext: func(_ context.Context, network, _ string) (net.Conn, error) {
 				return net.Dial(network, s.Listener.Addr().String())
 			},
+			// #nosec G402
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: true,
 			},
@@ -92,15 +130,27 @@ func testHTTPClient(handler http.Handler) (*http.Client, func()) {
 }
 
 func fileToResponseHandler(t *testing.T, filename string) http.HandlerFunc {
-	file, err := os.Open(filename)
-
+	file, err := os.Open(filename) // #nosec G304
 	if err != nil {
 		panic(err)
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
-		io.Copy(w, file) // nolint:errcheck
+		// nolint:errcheck
+		// #nosec G104
+		io.Copy(w, file)
+		// nolint:errcheck
+		// #nosec G104
 		file.Close()
+	}
+}
+
+func stringToResponseHandler(t *testing.T, body string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
+		// nolint:errcheck
+		// #nosec G104
+		io.WriteString(w, body)
 	}
 }

@@ -4,23 +4,12 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"golang.org/x/xerrors"
 	"io"
 	"path"
 	"runtime"
 )
 
-func UnwrapErrorResponse(err error) *ErrorResponse {
-	var response *ErrorResponse
-
-	if xerrors.As(err, &response) {
-		return response
-	}
-
-	return nil
-}
-
-func isValidHttpResponse(statusCode int, httpStatusCodes []int) bool {
+func isValidHTTPResponse(statusCode int, httpStatusCodes []int) bool {
 	for _, validStatusCode := range httpStatusCodes {
 		if statusCode == validStatusCode {
 			return true
@@ -29,7 +18,7 @@ func isValidHttpResponse(statusCode int, httpStatusCodes []int) bool {
 	return false
 }
 
-func isHttpStatusCodeWithinRange(statusCode int, statusCodeRange statusCodeRange) bool {
+func isHTTPStatusCodeWithinRange(statusCode int, statusCodeRange statusCodeRange) bool {
 	return statusCode >= statusCodeRange.start && statusCode <= statusCodeRange.end
 }
 
@@ -45,7 +34,6 @@ func getResourceDirectoryPath() (directory string, err error) {
 
 func getResourcePath(path string) (directory string) {
 	dir, err := getResourceDirectoryPath()
-
 	if err != nil {
 		panic(err)
 	}
