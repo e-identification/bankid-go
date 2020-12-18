@@ -14,7 +14,9 @@ const (
 func newValidator() *validator.Validate {
 	instance := validator.New()
 
-	instance.RegisterValidation(base64Length, validateBase64Length)
+	if err := instance.RegisterValidation(base64Length, validateBase64Length); err != nil {
+		panic(err)
+	}
 
 	return instance
 }

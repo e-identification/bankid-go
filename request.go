@@ -13,13 +13,13 @@ const (
 
 type Request interface {
 	Uri() string
-	Payload() payloadInterface
+	Payload() Payload
 	Response() Response
 }
 
 type request struct {
 	uri      string
-	payload  payloadInterface
+	payload  Payload
 	response Response
 }
 
@@ -27,7 +27,7 @@ func (r request) Uri() string {
 	return r.uri
 }
 
-func (r request) Payload() payloadInterface {
+func (r request) Payload() Payload {
 	return r.payload
 }
 

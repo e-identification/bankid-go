@@ -56,7 +56,7 @@ func getResourcePath(path string) (directory string) {
 func readCloserToString(readCloser io.ReadCloser) string {
 	buf := new(bytes.Buffer)
 
-	buf.ReadFrom(readCloser)
+	_, _ = buf.ReadFrom(readCloser)
 
 	return buf.String()
 }

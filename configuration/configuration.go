@@ -35,6 +35,7 @@ func New(environment *Environment, certFile string, keyFile string, options ...O
 type Option func(*Configuration)
 
 // Function to create Option func to set the timeout limit
+// nolint:deadcode, unused
 func setTimeout(timeout time.Duration) Option {
 	return func(subject *Configuration) {
 		subject.Timeout = timeout

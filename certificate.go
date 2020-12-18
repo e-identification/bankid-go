@@ -38,7 +38,7 @@ func createCertPool(certificatePath string) (*x509.CertPool, error) {
 	}
 
 	caPool := x509.NewCertPool()
-	if caPool.AppendCertsFromPEM(ca) == false {
+	if !caPool.AppendCertsFromPEM(ca) {
 		return nil, fmt.Errorf("could not append CA Certificate to pool. Invalid certificate")
 	}
 
