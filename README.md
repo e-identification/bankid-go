@@ -3,6 +3,7 @@
 A library for providing BankID services as a RP (Relying party).
 Supports the latest v5 features.
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/cabd5fbbcde543ec959fb4a3581600ed)](https://app.codacy.com/gh/NicklasWallgren/bankid?utm_source=github.com&utm_medium=referral&utm_content=NicklasWallgren/bankid&utm_campaign=Badge_Grade)
 [![Build Status](https://travis-ci.org/NicklasWallgren/bankid.svg?branch=master)](https://travis-ci.org/NicklasWallgren/bankid)
 [![Go Report Card](https://goreportcard.com/badge/github.com/stretchr/testify)](https://goreportcard.com/report/github.com/NicklasWallgren/bankid)
 [![GoDoc](https://godoc.org/github.com/NicklasWallgren/bankid?status.svg)](https://godoc.org/github.com/NicklasWallgren/bankid) 
