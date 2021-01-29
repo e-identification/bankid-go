@@ -51,7 +51,11 @@ type AuthenticateResponse struct {
 	AutoStartToken string `json:"autoStartToken"`
 	// Used to collect the status of the order.
 	OrderRef string `json:"orderRef"`
-	bankID   *BankID
+	// Used to compute the animated QR code.
+	QrStartToken string `json:"qrStartToken"`
+	// Used to compute the animated QR code.
+	QrStartSecret string `json:"qrStartSecret"`
+	bankID        *BankID
 }
 
 func (a *AuthenticateResponse) String() string {

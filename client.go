@@ -100,3 +100,16 @@ func (c client) urlFrom(request Request) string {
 func (c client) request(request *http.Request) (*http.Response, error) {
 	return c.client.Do(request)
 }
+
+func isValidHTTPResponse(statusCode int, httpStatusCodes []int) bool {
+	for _, validStatusCode := range httpStatusCodes {
+		if statusCode == validStatusCode {
+			return true
+		}
+	}
+	return false
+}
+
+func isHTTPStatusCodeWithinRange(statusCode int, statusCodeRange statusCodeRange) bool {
+	return statusCode >= statusCodeRange.start && statusCode <= statusCodeRange.end
+}

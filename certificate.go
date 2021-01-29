@@ -1,16 +1,18 @@
 package bankid
 
 import (
+	"crypto"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/base64"
 	"fmt"
-	"io/ioutil"
 
 	"github.com/NicklasWallgren/bankid/configuration"
+	"golang.org/x/crypto/pkcs12"
 )
 
 func newTLSClientConfig(configuration *configuration.Configuration) (*tls.Config, error) {
-	caPool, err := createCertPool(configuration.Environment.CertificationFilePath)
+	caPool, err := createCertPool(configuration.Environment.Certificate)
 	if err != nil {
 		return nil, err
 	}
@@ -30,25 +32,31 @@ func newTLSClientConfig(configuration *configuration.Configuration) (*tls.Config
 	return clientCfg, nil
 }
 
-func createCertPool(certificatePath string) (*x509.CertPool, error) {
-	ca, err := ioutil.ReadFile(certificatePath) // #nosec G304
+func createCertPool(base64EncodedCertificate string) (*x509.CertPool, error) {
+	certificate, err := base64.StdEncoding.DecodeString(base64EncodedCertificate)
 	if err != nil {
-		return nil, fmt.Errorf("unable to parse certificate %w", err)
+		return nil, fmt.Errorf("could not decode the certificate. %w", err)
 	}
 
 	caPool := x509.NewCertPool()
-	if !caPool.AppendCertsFromPEM(ca) {
-		return nil, fmt.Errorf("could not append CA Certificate to pool. Invalid certificate")
+	if !caPool.AppendCertsFromPEM(certificate) {
+		return nil, fmt.Errorf("could not append CA Certificate to pool. Invalid base64EncodedCertificate")
 	}
 
 	return caPool, nil
 }
 
 func createCertLeaf(configuration *configuration.Configuration) (*tls.Certificate, error) {
-	rpCert, err := tls.LoadX509KeyPair(configuration.CertFile, configuration.KeyFile)
+	key, leaf, err := pkcs12.Decode(configuration.Pkcs12.Content, configuration.Pkcs12.Password)
 	if err != nil {
-		return nil, fmt.Errorf("unable to load certificate %w", err)
+		return nil, fmt.Errorf("unable to load pkcs12 %w", err)
 	}
 
-	return &rpCert, nil
+	cert := &tls.Certificate{
+		Certificate: [][]byte{leaf.Raw},
+		PrivateKey:  key.(crypto.PrivateKey),
+		Leaf:        leaf,
+	}
+
+	return cert, nil
 }

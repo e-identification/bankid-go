@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"path"
+	"runtime"
 
 	"github.com/NicklasWallgren/bankid"
 	"github.com/NicklasWallgren/bankid/configuration"
@@ -11,9 +14,9 @@ import (
 
 func main() {
 	configuration := configuration.New(
-		&configuration.TestEnvironment,
-		configuration.GetResourcePath("certificates/test.crt"),
-		configuration.GetResourcePath("certificates/test.key"))
+		configuration.TestEnvironment,
+		&configuration.Pkcs12{Content: loadPkcs12(getResourcePath("certificates/test.p12")), Password: "qwerty123"},
+	)
 
 	bankID := bankid.New(configuration)
 
@@ -32,6 +35,15 @@ func main() {
 	fmt.Println(response.Collect(context.Background()))
 }
 
+func loadPkcs12(path string) []byte {
+	cert, err := ioutil.ReadFile(path)
+	if err != nil {
+		panic(err)
+	}
+
+	return cert
+}
+
 func unwrapAsErrorResponse(err error) *bankid.ErrorResponse {
 	var response bankid.ErrorResponse
 
@@ -40,4 +52,25 @@ func unwrapAsErrorResponse(err error) *bankid.ErrorResponse {
 	}
 
 	return nil
+}
+
+// getResourceDirectoryPath returns the full path to the resource directory.
+func getResourceDirectoryPath() (directory string, err error) {
+	_, filename, _, ok := runtime.Caller(0)
+
+	if !ok {
+		return "", fmt.Errorf("could not derive directory path")
+	}
+
+	return fmt.Sprintf("%s/%s", path.Dir(filename), "../resource"), nil
+}
+
+// getResourcePath returns the full path to the resource.
+func getResourcePath(path string) (directory string) {
+	dir, err := getResourceDirectoryPath()
+	if err != nil {
+		panic(err)
+	}
+
+	return fmt.Sprintf("%s/%s", dir, path)
 }

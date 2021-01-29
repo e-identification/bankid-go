@@ -21,7 +21,7 @@ go get github.com/NicklasWallgren/bankid
 We support the two major Go versions, which are 1.14 and 1.15 at the moment.
 
 # Features
-- Supports all v5 features
+- Supports all v5.1 features
 
 # Examples 
 
@@ -33,10 +33,15 @@ import (
     "github.com/NicklasWallgren/bankid/configuration"
 )
 
+certificate, err := ioutil.ReadFile("path/to/environment.p12")
+if err != nil {
+    panic(err)
+}
+
 configuration := configuration.New(
-    &configuration.TestEnvironment,
-    configuration.GetResourcePath("certificates/test.crt"),
-    configuration.GetResourcePath("certificates/test.key"))
+    configuration.TestEnvironment,
+    &configuration.Pkcs12{Content: certificate), Password: "p12 password"},
+)
 
 bankId := bankid.New(configuration)
 

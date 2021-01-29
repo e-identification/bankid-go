@@ -4,11 +4,15 @@ import (
 	"context"
 	"crypto/tls"
 	"errors"
+	"fmt"
 	"io"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path"
+	"runtime"
 	"testing"
 
 	"github.com/NicklasWallgren/bankid/configuration"
@@ -99,7 +103,8 @@ func TestCancel(t *testing.T) {
 // Returns a bankID whose requests will always return
 // a response configured by the handler.
 func testBankID(handler http.HandlerFunc) (*BankID, func()) {
-	configuration := configuration.New(&configuration.TestEnvironment, getResourcePath("certificates/test.crt"), getResourcePath("certificates/test.key"))
+	configuration := configuration.New(configuration.TestEnvironment,
+		&configuration.Pkcs12{Content: loadFile(getResourcePath("certificates/test.p12")), Password: "qwerty123"})
 
 	bankID := New(configuration)
 
@@ -153,4 +158,33 @@ func stringToResponseHandler(t *testing.T, body string) http.HandlerFunc {
 		// #nosec G104
 		io.WriteString(w, body)
 	}
+}
+
+func loadFile(path string) []byte {
+	// #nosec G304
+	fileContent, err := ioutil.ReadFile(path)
+	if err != nil {
+		panic(err)
+	}
+
+	return fileContent
+}
+
+func getResourcePath(path string) (directory string) {
+	dir, err := getResourceDirectoryPath()
+	if err != nil {
+		panic(err)
+	}
+
+	return fmt.Sprintf("%s/%s", dir, path)
+}
+
+func getResourceDirectoryPath() (directory string, err error) {
+	_, filename, _, ok := runtime.Caller(0)
+
+	if !ok {
+		return "", errors.New("could not derive directory path")
+	}
+
+	return fmt.Sprintf("%s/%s", path.Dir(filename), "./resource"), nil
 }
