@@ -28,7 +28,9 @@ We support the two major Go versions, which are 1.14 and 1.15 at the moment.
 ## Initiate sign request
 ```go
 import (
+    "context"
     "fmt"
+    "io/ioutil"
     "github.com/NicklasWallgren/bankid"
     "github.com/NicklasWallgren/bankid/configuration"
 )

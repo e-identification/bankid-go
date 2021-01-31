@@ -21,8 +21,8 @@ func newJSONDecoder() decoder {
 }
 
 func (j jsonDecoder) decode(subject Response, response *http.Response, bankID *BankID) (Response, error) {
-	if !isValidHTTPResponse(response.StatusCode, httpStatusCodes) {
-		return nil, fmt.Errorf("invalid http response. Http Code: %d. Body: %s", response.StatusCode, readCloserToString(response.Body))
+	if !isValidHTTPResponse(response.StatusCode, expectedHTTPStatusCodes) {
+		return nil, fmt.Errorf("invalid http response. Http Code: %d. Body: %s", response.StatusCode, tryReadCloserToString(response.Body))
 	}
 
 	if isHTTPStatusCodeWithinRange(response.StatusCode, successRange) {
@@ -38,12 +38,7 @@ func (j jsonDecoder) decode(subject Response, response *http.Response, bankID *B
 		return nil, j.decodeError(response, bankID)
 	}
 
-	decoded, err := subject.Decode(response.Body, bankID)
-	if err != nil {
-		return nil, fmt.Errorf("unable to decode response %w", err)
-	}
-
-	return decoded, nil
+	return nil, fmt.Errorf("unable to decode response %s", tryReadCloserToString(response.Body))
 }
 
 func (j jsonDecoder) decodeError(response *http.Response, bankID *BankID) error {

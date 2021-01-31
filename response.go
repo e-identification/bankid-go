@@ -14,6 +14,9 @@ const (
 	StatusComplete = "complete"
 	// StatusFailed is the status of a failed order. hintCode describes the error.
 	StatusFailed = "failed"
+	// StatusAlreadyInProgress is the hint for a order where an auth or sign request with personal number was sent, but an order for the user is already in progress. The order is aborted. No order is created.
+	// Details are found in details.
+	StatusAlreadyInProgress = "alreadyInProgress"
 	// HintCodeOutstandingTransaction is the hint for a order that is pending. The client has not yet received the order.
 	// The hintCode will later change to noClient, started or userSign.
 	HintCodeOutstandingTransaction = "outstandingTransaction"
@@ -35,9 +38,6 @@ const (
 	HintCodeCancelled = "cancelled"
 	// HintCodeStartFailed is a hint for when a order could not be initialized.
 	HintCodeStartFailed = "startFailed"
-	// ErrorAlreadyInProgress is the hint for a order where an auth or sign request with personal number was sent, but an order for the user is already in progress. The order is aborted. No order is created.
-	// Details are found in details.
-	ErrorAlreadyInProgress = "alreadyInProgress"
 )
 
 // Response is the interface implemented by types that holds the response context fields.
@@ -156,7 +156,7 @@ func (c *CancelResponse) Decode(subject io.ReadCloser, bankID *BankID) (Response
 	return c, nil
 }
 
-// ErrorResponse contrains fields fpr the error response.
+// ErrorResponse contains fields for the error response.
 type ErrorResponse struct {
 	ErrorCode string `json:"errorCode"`
 	Details   string `json:"details"`

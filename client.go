@@ -11,7 +11,7 @@ import (
 )
 
 // The known API endpoints status codes.
-var httpStatusCodes = []int{200, 400, 401, 403, 404, 408, 415, 500, 503}
+var expectedHTTPStatusCodes = []int{200, 400, 401, 403, 404, 408, 415, 500, 503}
 
 // Client is the interface implemented by types that can invoke the BankID REST API.
 type Client interface {

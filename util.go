@@ -5,10 +5,12 @@ import (
 	"io"
 )
 
-func readCloserToString(readCloser io.ReadCloser) string {
+func tryReadCloserToString(readCloser io.ReadCloser) string {
 	buf := new(bytes.Buffer)
 
-	_, _ = buf.ReadFrom(readCloser)
+	if _, err := buf.ReadFrom(readCloser); err != nil {
+		return ""
+	}
 
 	return buf.String()
 }
