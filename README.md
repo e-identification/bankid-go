@@ -5,7 +5,7 @@ Supports the latest v5 features.
 
 [![Build Status](https://github.com/NicklasWallgren/bankid/workflows/Test/badge.svg)](https://github.com/NicklasWallgren/bankid/actions?query=workflow%3ATest)
 [![Reviewdog](https://github.com/NicklasWallgren/bankid/workflows/reviewdog/badge.svg)](https://github.com/NicklasWallgren/bankid/actions?query=workflow%3Areviewdog)
-[![Go Report Card](https://goreportcard.com/badge/github.com/stretchr/testify)](https://goreportcard.com/report/github.com/NicklasWallgren/bankid)
+[![Go Report Card](https://goreportcard.com/badge/github.com/NicklasWallgren/bankid)](https://goreportcard.com/report/github.com/NicklasWallgren/bankid)
 [![GoDoc](https://godoc.org/github.com/NicklasWallgren/bankid?status.svg)](https://godoc.org/github.com/NicklasWallgren/bankid)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/cabd5fbbcde543ec959fb4a3581600ed)](https://app.codacy.com/gh/NicklasWallgren/bankid?utm_source=github.com&utm_medium=referral&utm_content=NicklasWallgren/bankid&utm_campaign=Badge_Grade)
 
@@ -68,15 +68,21 @@ fmt.Println(response.Collect())
 go test -v -race $(go list ./... | grep -v vendor)
 ```
 
+### Code Guide
+
+We use GitHub Actions to make sure the codebase is consistent (`golangci-lint run`) and continuously tested (`go test -v -race $(go list ./... | grep -v vendor)`). We try to keep comments at a maximum of 120 characters of length and code at 120.
+
+
 ## Contributing
-  - Fork it!
-  - Create your feature branch: `git checkout -b my-new-feature`
-  - Commit your changes: `git commit -am 'Useful information about your new features'`
-  - Push to the branch: `git push origin my-new-feature`
-  - Submit a pull request
+
+If you find any problems or have suggestions about this library, please submit an issue. Moreover, any pull request, code review and feedback are welcome.
 
 ## Contributors
   - [Nicklas Wallgren](https://github.com/NicklasWallgren)
   - [All Contributors][link-contributors]
 
 [link-contributors]: ../../contributors
+
+## License
+
+[MIT](./LICENSE)
