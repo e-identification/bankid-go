@@ -1,6 +1,6 @@
 # BankID library
 
-A library for providing BankID services as a RP (Relying party).
+A library for providing BankID services as an RP (Relying party).
 Supports the latest v5 features.
 
 [![Build Status](https://github.com/NicklasWallgren/bankid/workflows/Test/badge.svg)](https://github.com/NicklasWallgren/bankid/actions?query=workflow%3ATest)
@@ -23,6 +23,24 @@ We support the two major Go versions, which are 1.14 and 1.15 at the moment.
 # Features
 - Supports all v5.1 features
 
+# SDK
+```go
+// Creates new BankID instance
+New(configuration *configuration.Configuration) (*BankID)
+
+// Initiates an authentication order 
+(b BankID) Authenticate(context context.Context, payload *AuthenticationPayload) (*AuthenticateResponse, error)
+
+// Initiates an sign order
+(b BankID) Sign(context context.Context, payload *SignPayload) (*SignResponse, error)
+
+// Collects the result of a sign or auth order suing the orderRef as reference
+(b BankID) Collect(context context.Context, payload *CollectPayload) (*CollectResponse, error)
+
+// Cancels an ongoing sign or auth order
+(b BankID) Cancel(context context.Context, payload *CancelPayload) (*CancelResponse, error)
+```
+
 # Examples 
 
 ## Initiate sign request
@@ -31,43 +49,41 @@ We support the two major Go versions, which are 1.14 and 1.15 at the moment.
 package main
 
 import (
-	"context"
-	"fmt"
-	"io/ioutil"
+"context"
+"fmt"
+"io/ioutil"
 
-	"github.com/NicklasWallgren/bankid"
-	"github.com/NicklasWallgren/bankid/configuration"
+"github.com/NicklasWallgren/bankid"
+"github.com/NicklasWallgren/bankid/configuration"
 )
 
-func main() {
-	certificate, err := ioutil.ReadFile("path/to/environment.p12")
-	if err != nil {
-		panic(err)
-	}
-
-	config := configuration.New(
-		configuration.TestEnvironment,
-		&configuration.Pkcs12{Content: certificate, Password: "p12 password"},
-	)
-
-	bankId := bankid.New(config)
-
-	payload := bankid.SignPayload{PersonalNumber: "<INSERT PERSONAL NUMBER>", EndUserIP: "192.168.1.1", UserVisibleData: "Test"}
-
-	ctx := context.Background()
-	response, err := bankId.Sign(ctx, &payload)
-
-	if err != nil {
-		if response, ok := err.(*bankid.ErrorResponse); ok {
-			fmt.Printf("ErrResponse: %s - %s \n", response.Details, response.ErrorCode)
-		}
-
-		fmt.Printf("%#v", err)
-		return
-	}
-
-	fmt.Println(response.Collect(ctx))
+certificate, err := ioutil.ReadFile("path/to/environment.p12")
+if err != nil {
+    panic(err)
 }
+
+config := configuration.New(
+    configuration.TestEnvironment,
+    &configuration.Pkcs12{Content: certificate, Password: "p12 password"},
+)
+
+bankId := bankid.New(config)
+
+payload := bankid.SignPayload{PersonalNumber: "<INSERT PERSONAL NUMBER>", EndUserIP: "192.168.1.1", UserVisibleData: "Test"}
+
+ctx := context.Background()
+response, err := bankId.Sign(ctx, &payload)
+
+if err != nil {
+	if response, ok := err.(*bankid.ErrorResponse); ok {
+        fmt.Printf("ErrResponse: %s - %s \n", response.Details, response.ErrorCode)
+    }
+
+    fmt.Printf("%#v", err)
+    return
+}
+
+fmt.Println(response.Collect(ctx))
 ```
 
 ## Unit tests
