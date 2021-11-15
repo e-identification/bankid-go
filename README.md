@@ -26,41 +26,48 @@ We support the two major Go versions, which are 1.14 and 1.15 at the moment.
 # Examples 
 
 ## Initiate sign request
+
 ```go
+package main
+
 import (
-    "context"
-    "fmt"
-    "io/ioutil"
-    "github.com/NicklasWallgren/bankid"
-    "github.com/NicklasWallgren/bankid/configuration"
+	"context"
+	"fmt"
+	"io/ioutil"
+
+	"github.com/NicklasWallgren/bankid"
+	"github.com/NicklasWallgren/bankid/configuration"
 )
 
-certificate, err := ioutil.ReadFile("path/to/environment.p12")
-if err != nil {
-    panic(err)
+func main() {
+	certificate, err := ioutil.ReadFile("path/to/environment.p12")
+	if err != nil {
+		panic(err)
+	}
+
+	config := configuration.New(
+		configuration.TestEnvironment,
+		&configuration.Pkcs12{Content: certificate, Password: "p12 password"},
+	)
+
+	bankId := bankid.New(config)
+
+	payload := bankid.SignPayload{PersonalNumber: "<INSERT PERSONAL NUMBER>", EndUserIP: "192.168.1.1", UserVisibleData: "Test"}
+
+	ctx := context.Background()
+	response, err := bankId.Sign(ctx, &payload)
+
+	if err != nil {
+		if response, ok := err.(*bankid.ErrorResponse); ok {
+			fmt.Printf("ErrResponse: %s - %s \n", response.Details, response.ErrorCode)
+		}
+
+		fmt.Printf("%#v", err)
+		return
+	}
+
+	fmt.Println(response.Collect(ctx))
 }
-
-configuration := configuration.New(
-    configuration.TestEnvironment,
-    &configuration.Pkcs12{Content: certificate), Password: "p12 password"},
-)
-
-bankId := bankid.New(configuration)
-
-payload := bankid.SignPayload{PersonalNumber: "<INSERT PERSONAL NUMBER>", EndUserIp: "192.168.1.1", UserVisibleData: "Test"}
-
-response, err := bankId.Sign(&payload)
-
-if err != nil {
-    if response := bankid.UnwrapErrorResponse(err); response != nil {
-        fmt.Printf("%s - %s \n", response.Details, response.ErrorCode)
-    }
-
-    fmt.Printf("%#v", err)
-    return
-}
-
-fmt.Println(response.Collect())
 ```
 
 ## Unit tests
