@@ -46,15 +46,13 @@ New(configuration *configuration.Configuration) (*BankID)
 ## Initiate sign request
 
 ```go
-package main
-
 import (
-"context"
-"fmt"
-"io/ioutil"
+    "context"
+    "fmt"
+    "io/ioutil"
 
-"github.com/NicklasWallgren/bankid"
-"github.com/NicklasWallgren/bankid/configuration"
+    "github.com/NicklasWallgren/bankid"
+    "github.com/NicklasWallgren/bankid/configuration"
 )
 
 certificate, err := ioutil.ReadFile("path/to/environment.p12")
@@ -71,8 +69,7 @@ bankId := bankid.New(config)
 
 payload := bankid.SignPayload{PersonalNumber: "<INSERT PERSONAL NUMBER>", EndUserIP: "192.168.1.1", UserVisibleData: "Test"}
 
-ctx := context.Background()
-response, err := bankId.Sign(ctx, &payload)
+response, err := bankId.Sign(context.Background(), &payload)
 
 if err != nil {
 	if response, ok := err.(*bankid.ErrorResponse); ok {
