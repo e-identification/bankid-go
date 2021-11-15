@@ -23,7 +23,7 @@ type AuthenticationPayload struct {
 	// The personal number of the user. String 12 digits. Century must be included.
 	// If the personal number is excluded, the client must be started with
 	// the autoStartToken returned in the response.
-	PersonalNumber string `validate:"numeric" json:"personalNumber"`
+	PersonalNumber string `validate:"omitempty,numeric" json:"personalNumber,omitempty"`
 	// The user IP address as seen by RP. String, IPv4 and IPv6 is allowed.
 	EndUserIP string `validate:"ip" json:"endUserIp"`
 	// Requirements on how the auth or sign order must be performed.
