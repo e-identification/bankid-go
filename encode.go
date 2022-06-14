@@ -13,5 +13,5 @@ func newJSONEncoder() encoder {
 }
 
 func (e jsonEncoder) encode(payload Payload) ([]byte, error) {
-	return json.Marshal(payload)
+	return json.Marshal(payload) // nolint:wrapcheck
 }

@@ -15,6 +15,7 @@ type Requirement struct {
 	IssuerCn               string `validate:"omitempty,len=10" json:"issuerCn,omitempty"`
 	AutoStartTokenRequired bool   `json:"autoStartTokenRequired,omitempty"`
 	AllowFingerprint       bool   `json:"allowFingerprint,omitempty"`
+	TokenStartRequired     bool   `json:"tokenStartRequired,omitempty"`
 }
 
 // AuthenticationPayload holds the required and optional fields of the authentication request.
@@ -51,7 +52,7 @@ type SignPayload struct {
 
 // MarshalJSON returns a JSON encoded 'SignPayload'.
 func (s SignPayload) MarshalJSON() ([]byte, error) {
-	return json.Marshal(&struct {
+	return json.Marshal(&struct { // nolint:wrapcheck
 		PersonalNumber     string       `json:"personalNumber"`
 		EndUserIP          string       `json:"endUserIp"`
 		UserVisibleData    string       `json:"userVisibleData"`

@@ -100,6 +100,17 @@ func TestCancel(t *testing.T) {
 	}
 }
 
+func TestQRCodeContent(t *testing.T) {
+	bankID, teardown := testBankID(stringToResponseHandler(t, "{}"))
+	defer teardown()
+
+	qrCodeContent, err := bankID.QRCodeContent("67df3917-fa0d-44e5-b327-edcc928297f8", "d28db9a7-4cde-429e-a983-359be676944c", 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, "bankid.67df3917-fa0d-44e5-b327-edcc928297f8.0.dc69358e712458a66a7525beef148ae8526b1c71610eff2c16cdffb4cdac9bf8", qrCodeContent)
+}
+
 // Returns a bankID whose requests will always return
 // a response configured by the handler.
 func testBankID(handler http.HandlerFunc) (*BankID, func()) {
@@ -122,7 +133,7 @@ func testHTTPClient(handler http.Handler) (*http.Client, func()) {
 	cli := &http.Client{
 		Transport: &http.Transport{
 			DialContext: func(_ context.Context, network, _ string) (net.Conn, error) {
-				return net.Dial(network, s.Listener.Addr().String())
+				return net.Dial(network, s.Listener.Addr().String()) // nolint:wrapcheck
 			},
 			// #nosec G402
 			TLSClientConfig: &tls.Config{
