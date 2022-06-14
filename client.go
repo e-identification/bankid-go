@@ -78,7 +78,7 @@ func (c client) call(ctx context.Context, request Request, bankID *BankID) (Resp
 
 	defer resp.Body.Close() // nolint:errcheck
 
-	return c.decoder.decode(request.Response(), resp, bankID)
+	return c.decoder.decode(request.Response(), resp, bankID) // nolint:wrapcheck
 }
 
 // newRequest creates and prepares a instance of http request.
@@ -98,7 +98,7 @@ func (c client) urlFrom(request Request) string {
 }
 
 func (c client) request(request *http.Request) (*http.Response, error) {
-	return c.client.Do(request)
+	return c.client.Do(request) // nolint:wrapcheck
 }
 
 func isValidHTTPResponse(statusCode int, httpStatusCodes []int) bool {

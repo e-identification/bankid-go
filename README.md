@@ -18,7 +18,7 @@ go get github.com/NicklasWallgren/bankid
 ```
 
 # Supported versions
-We support the two major Go versions, which are 1.14 and 1.15 at the moment.
+We support the two major Go versions, which are 1.17 and 1.18 at the moment.
 
 # Features
 - Supports all v5.1 features
