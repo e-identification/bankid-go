@@ -60,7 +60,7 @@ type Requirement struct {
 	// complete the order.
 	Mrtd bool `json:"mrtd,omitempty"`
 	// A personal identification number to be used to complete the transaction.
-	PersonalNumber string `validate:"numeric,len=12" json:"personalNumber,omitempty"`
+	PersonalNumber string `validate:"omitempty,numeric,len=12" json:"personalNumber,omitempty"`
 	// If true, users are required to sign the transaction with their PIN code.
 	PinCode bool `json:"pinCode,omitempty"`
 }
