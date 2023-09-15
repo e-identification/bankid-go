@@ -15,7 +15,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/NicklasWallgren/bankid/configuration"
+	"github.com/stimtech/go-bankid/configuration"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -24,7 +24,7 @@ func TestAuthenticate(t *testing.T) {
 	bankID, teardown := testBankID(fileToResponseHandler(t, "resource/test_data/sign_response.json"))
 	defer teardown()
 
-	payload := &AuthenticationPayload{PersonalNumber: "123456789123", EndUserIP: "192.168.1.1"}
+	payload := &AuthenticationPayload{EndUserIP: "192.168.1.1", Requirement: &Requirement{PersonalNumber: "123456789123"}}
 
 	response, err := bankID.Authenticate(context.Background(), payload)
 	if err != nil {
@@ -39,7 +39,7 @@ func TestSign(t *testing.T) {
 	bankID, teardown := testBankID(fileToResponseHandler(t, "resource/test_data/sign_response.json"))
 	defer teardown()
 
-	payload := &SignPayload{PersonalNumber: "123456789123", EndUserIP: "192.168.1.1", UserVisibleData: "Test", Requirement: &Requirement{CardReader: ""}}
+	payload := &SignPayload{EndUserIP: "192.168.1.1", UserVisibleData: "Test", Requirement: &Requirement{CardReader: "", PersonalNumber: "123456789123"}}
 
 	response, err := bankID.Sign(context.Background(), payload)
 	if err != nil {
@@ -56,7 +56,7 @@ func TestSign(t *testing.T) {
 func TestSignWithInvalidPayload(t *testing.T) {
 	bankID := New(&configuration.Configuration{})
 
-	payload := &SignPayload{PersonalNumber: "INVALID-PERSONAL-NUMBER", EndUserIP: "192.168.1.1", UserVisibleData: "Test", Requirement: &Requirement{CardReader: ""}}
+	payload := &SignPayload{EndUserIP: "192.168.1.1", UserVisibleData: "Test", Requirement: &Requirement{CardReader: "", PersonalNumber: "INVALID-PERSONAL-NUMBER"}}
 	_, err := bankID.Sign(context.Background(), payload)
 
 	var validationErrors validator.ValidationErrors
