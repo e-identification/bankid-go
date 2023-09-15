@@ -1,6 +1,6 @@
-module github.com/NicklasWallgren/bankid
+module  github.com/stimtech/go-bankid
 
-go 1.12
+go 1.21
 
 require (
 	github.com/go-playground/locales v0.12.1 // indirect
