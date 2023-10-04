@@ -225,6 +225,8 @@ type user struct {
 type device struct {
 	// The IP address of the user agent as the BankID server discovers it.
 	IPAddress string `json:"ipAddress"`
+	// Unique hardware identifier for the user’s device.
+	UHI string `json:"uhi"`
 }
 
 type cert struct {
