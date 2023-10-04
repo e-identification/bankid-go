@@ -7,7 +7,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/NicklasWallgren/bankid/configuration"
+	"github.com/stimtech/go-bankid/configuration"
 	"gopkg.in/go-playground/validator.v9"
 )
 

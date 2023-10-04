@@ -7,7 +7,7 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/NicklasWallgren/bankid/configuration"
+	"github.com/stimtech/go-bankid/configuration"
 	"golang.org/x/crypto/pkcs12"
 )
 

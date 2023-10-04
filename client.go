@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/NicklasWallgren/bankid/configuration"
+	"github.com/stimtech/go-bankid/configuration"
 )
 
 // The known API endpoints status codes.

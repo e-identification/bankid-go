@@ -40,9 +40,9 @@ type Option func(*Configuration)
 
 var (
 	// TestEnvironment contains the environment specific fields for the test environment.
-	TestEnvironment = NewEnvironment("https://appapi2.test.bankid.com/rp/v5.1", testCertificate)
+	TestEnvironment = NewEnvironment("https://appapi2.test.bankid.com/rp/v6.0", testCertificate)
 	// ProductionEnvironment contains the environment specific fields for the production environment.
-	ProductionEnvironment = NewEnvironment("https://appapi2.bankid.com/rp/v5.1", prodCertificate)
+	ProductionEnvironment = NewEnvironment("https://appapi2.bankid.com/rp/v6.0", prodCertificate)
 )
 
 const (

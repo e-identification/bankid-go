@@ -14,7 +14,7 @@ Check out the API Documentation http://godoc.org/github.com/NicklasWallgren/bank
 # Installation
 The library can be installed through `go get` 
 ```bash
-go get github.com/NicklasWallgren/bankid
+go get github.com/stimtech/go-bankid
 ```
 
 # Supported versions
