@@ -238,7 +238,6 @@ type cert struct {
 
 func decode(subject io.ReadCloser, target interface{}) error {
 	decoder := json.NewDecoder(subject)
-	decoder.DisallowUnknownFields()
 
 	return decoder.Decode(&target) // nolint:wrapcheck
 }
