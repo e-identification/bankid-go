@@ -1,15 +1,15 @@
 # BankID library
 
-A library for providing BankID services as an RP (Relying party).
-Supports the latest v6 features.
-
 [![Build Status](https://github.com/NicklasWallgren/bankid/workflows/Test/badge.svg)](https://github.com/NicklasWallgren/bankid/actions?query=workflow%3ATest)
 [![Reviewdog](https://github.com/NicklasWallgren/bankid/workflows/reviewdog/badge.svg)](https://github.com/NicklasWallgren/bankid/actions?query=workflow%3Areviewdog)
 [![Go Report Card](https://goreportcard.com/badge/github.com/NicklasWallgren/bankid)](https://goreportcard.com/report/github.com/NicklasWallgren/bankid)
 [![GoDoc](https://godoc.org/github.com/NicklasWallgren/bankid?status.svg)](https://godoc.org/github.com/NicklasWallgren/bankid)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/cabd5fbbcde543ec959fb4a3581600ed)](https://app.codacy.com/gh/NicklasWallgren/bankid?utm_source=github.com&utm_medium=referral&utm_content=NicklasWallgren/bankid&utm_campaign=Badge_Grade)
 
-To learn how to use the library, please refer to the [documentation](https://godoc.org/github.com/NicklasWallgren/bankid/v2). There are some [examples that may be useful](./examples) that may be useful as well.
+A library for providing BankID services as an RP (Relying party).  
+Supports the latest v6 features.
+
+To learn how to use the library, please refer to the [documentation](https://godoc.org/github.com/NicklasWallgren/bankid/v2). There are some [examples](./examples) that may be useful as well.
 
 # Installation
 The library can be installed through `go get` 
@@ -25,26 +25,26 @@ We support the two major Go versions, which are 1.20 and 1.21 at the moment.
 
 # SDK
 ```go
-// Creates new BankID instance
-New(configuration *configuration.Configuration) (*BankID)
+// Creates new BankIDClient instance
+NewBankIDClient(configuration *configuration.Configuration) (*BankIDClient)
 
 // Initiates an authentication order 
-(b BankID) Authenticate(context context.Context, payload *AuthenticationPayload) (*AuthenticateResponse, error)
+(b BankIDClient) Authenticate(context context.Context, payload *AuthenticationPayload) (*AuthenticateResponse, error)
 
 // Initiates a phone authentication order 
-(b BankID) PhoneAuthenticate(context context.Context, payload *PhoneAuthenticationPayload) (*PhoneAuthenticateResponse, error)
+(b BankIDClient) PhoneAuthenticate(context context.Context, payload *PhoneAuthenticationPayload) (*PhoneAuthenticateResponse, error)
 
 // Initiates a sign order
-(b BankID) Sign(context context.Context, payload *SignPayload) (*SignResponse, error)
+(b BankIDClient) Sign(context context.Context, payload *SignPayload) (*SignResponse, error)
 
 // Initiates a phone sign order
-(b BankID) PhoneSign(context context.Context, payload *PhoneSignPayload) (*PhoneSignResponse, error)
+(b BankIDClient) PhoneSign(context context.Context, payload *PhoneSignPayload) (*PhoneSignResponse, error)
 
 // Collects the result of a sign or auth order using the orderRef as reference
-(b BankID) Collect(context context.Context, payload *CollectPayload) (*CollectResponse, error)
+(b BankIDClient) Collect(context context.Context, payload *CollectPayload) (*CollectResponse, error)
 
 // Cancels an ongoing sign or auth order
-(b BankID) Cancel(context context.Context, payload *CancelPayload) (*CancelResponse, error)
+(b BankIDClient) Cancel(context context.Context, payload *CancelPayload) (*CancelResponse, error)
 ```
 
 ## Unit tests
