@@ -1,16 +1,16 @@
-package bankid
+package internal
 
 import (
-	"io/ioutil"
+	"io"
 	"strings"
 	"testing"
 )
 
 func TestTryReadCloserToString(t *testing.T) {
 	stringReader := strings.NewReader("output")
-	stringReadCloser := ioutil.NopCloser(stringReader)
+	stringReadCloser := io.NopCloser(stringReader)
 
-	result := tryReadCloserToString(stringReadCloser)
+	result := TryReadCloserToString(stringReadCloser)
 
 	if result != "output" {
 		t.Fail()

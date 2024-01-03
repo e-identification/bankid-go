@@ -4,54 +4,50 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path"
 	"runtime"
 
-	"github.com/NicklasWallgren/bankid"
-	"github.com/NicklasWallgren/bankid/configuration"
+	"github.com/NicklasWallgren/bankid/v2/pkg"
+	"github.com/NicklasWallgren/bankid/v2/pkg/configuration"
+	"github.com/NicklasWallgren/bankid/v2/pkg/payload"
 )
 
 func main() {
-	configuration := configuration.New(
+	configuration := configuration.NewConfiguration(
 		configuration.TestEnvironment,
 		&configuration.Pkcs12{Content: loadPkcs12(getResourcePath("certificates/test.p12")), Password: "qwerty123"},
 	)
 
-	bankID := bankid.New(configuration)
+	bankID, err := pkg.NewBankIDClient(configuration)
 
-	payload := bankid.AuthenticationPayload{PersonalNumber: "<INSERT PERSONAL NUMBER>", EndUserIP: "192.168.1.1"}
+	payload := payload.AuthenticationPayload{EndUserIP: "192.168.1.1", UserVisibleData: "blabla", Requirement: &payload.Requirement{PersonalNumber: "201912312392"}}
 
-	response, err := bankID.Authenticate(context.Background(), &payload)
+	httpResponse, err := bankID.Authenticate(context.Background(), &payload)
 	if err != nil {
-		if response := unwrapAsErrorResponse(err); response != nil {
-			fmt.Printf("%s - %s \n", response.Details, response.ErrorCode)
+		var apiError *pkg.APIError
+
+		if errors.As(err, &apiError) {
+			fmt.Printf("%s - %s \n", apiError.Details, apiError.ErrorCode)
+			return
 		}
 
 		fmt.Printf("%#v", err)
 		return
 	}
 
-	fmt.Println(response.Collect(context.Background()))
+	fmt.Println(httpResponse)
+
+	// fmt.Println(httpResponse.Collect(context.Background()))
 }
 
 func loadPkcs12(path string) []byte {
-	cert, err := ioutil.ReadFile(path)
+	cert, err := os.ReadFile(path)
 	if err != nil {
 		panic(err)
 	}
 
 	return cert
-}
-
-func unwrapAsErrorResponse(err error) *bankid.ErrorResponse {
-	var response bankid.ErrorResponse
-
-	if errors.Is(err, response) && errors.As(err, &response) {
-		return &response
-	}
-
-	return nil
 }
 
 // getResourceDirectoryPath returns the full path to the resource directory.
@@ -62,7 +58,7 @@ func getResourceDirectoryPath() (directory string, err error) {
 		return "", fmt.Errorf("could not derive directory path")
 	}
 
-	return fmt.Sprintf("%s/%s", path.Dir(filename), "../resource"), nil
+	return fmt.Sprintf("%s/%s", path.Dir(filename), "../pkg/resource"), nil
 }
 
 // getResourcePath returns the full path to the resource.

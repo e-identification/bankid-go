@@ -1,4 +1,4 @@
-package bankid
+package internal
 
 import (
 	"encoding/base64"
@@ -11,15 +11,15 @@ const (
 	base64Length = "base64Length"
 )
 
-// newValidator returns a new instance of 'Validator' prepared with custom validator methods.
-func newValidator() *validator.Validate {
+// NewValidator returns a new instance of 'Validator' prepared with custom validator methods.
+func NewValidator() (*validator.Validate, error) {
 	instance := validator.New()
 
 	if err := instance.RegisterValidation(base64Length, validateBase64Length); err != nil {
-		panic(err)
+		return nil, err // nolint:wrapcheck
 	}
 
-	return instance
+	return instance, nil
 }
 
 // validateBase64Length validates the length of a encoded string.
