@@ -3,8 +3,8 @@
 A library for providing BankID services as an RP (Relying party).
 Supports the latest v6 features.
 
-[![Build Status](https://github.com/NicklasWallgren/bankid/v2workflows/Test/badge.svg)](https://github.com/NicklasWallgren/bankid/v2actions?query=workflow%3ATest)
-[![Reviewdog](https://github.com/NicklasWallgren/bankid/v2workflows/reviewdog/badge.svg)](https://github.com/NicklasWallgren/bankid/v2actions?query=workflow%3Areviewdog)
+[![Build Status](https://github.com/NicklasWallgren/bankid/workflows/Test/badge.svg)](https://github.com/NicklasWallgren/bankid/actions?query=workflow%3ATest)
+[![Reviewdog](https://github.com/NicklasWallgren/bankid/workflows/reviewdog/badge.svg)](https://github.com/NicklasWallgren/bankid/actions?query=workflow%3Areviewdog)
 [![Go Report Card](https://goreportcard.com/badge/github.com/NicklasWallgren/bankid)](https://goreportcard.com/report/github.com/NicklasWallgren/bankid)
 [![GoDoc](https://godoc.org/github.com/NicklasWallgren/bankid?status.svg)](https://godoc.org/github.com/NicklasWallgren/bankid)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/cabd5fbbcde543ec959fb4a3581600ed)](https://app.codacy.com/gh/NicklasWallgren/bankid?utm_source=github.com&utm_medium=referral&utm_content=NicklasWallgren/bankid&utm_campaign=Badge_Grade)
