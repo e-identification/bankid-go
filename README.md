@@ -1,27 +1,27 @@
 # BankID library
 
 A library for providing BankID services as an RP (Relying party).
-Supports the latest v5 features.
+Supports the latest v6 features.
 
-[![Build Status](https://github.com/NicklasWallgren/bankid/workflows/Test/badge.svg)](https://github.com/NicklasWallgren/bankid/actions?query=workflow%3ATest)
-[![Reviewdog](https://github.com/NicklasWallgren/bankid/workflows/reviewdog/badge.svg)](https://github.com/NicklasWallgren/bankid/actions?query=workflow%3Areviewdog)
+[![Build Status](https://github.com/NicklasWallgren/bankid/v2workflows/Test/badge.svg)](https://github.com/NicklasWallgren/bankid/v2actions?query=workflow%3ATest)
+[![Reviewdog](https://github.com/NicklasWallgren/bankid/v2workflows/reviewdog/badge.svg)](https://github.com/NicklasWallgren/bankid/v2actions?query=workflow%3Areviewdog)
 [![Go Report Card](https://goreportcard.com/badge/github.com/NicklasWallgren/bankid)](https://goreportcard.com/report/github.com/NicklasWallgren/bankid)
 [![GoDoc](https://godoc.org/github.com/NicklasWallgren/bankid?status.svg)](https://godoc.org/github.com/NicklasWallgren/bankid)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/cabd5fbbcde543ec959fb4a3581600ed)](https://app.codacy.com/gh/NicklasWallgren/bankid?utm_source=github.com&utm_medium=referral&utm_content=NicklasWallgren/bankid&utm_campaign=Badge_Grade)
 
-Check out the API Documentation http://godoc.org/github.com/NicklasWallgren/bankid
+To learn how to use the library, please refer to the [documentation](https://godoc.org/github.com/NicklasWallgren/bankid/v2). There are some [examples that may be useful](./examples) that may be useful as well.
 
 # Installation
 The library can be installed through `go get` 
 ```bash
-go get github.com/NicklasWallgren/bankid
+go get github.com/NicklasWallgren/bankid/v2
 ```
 
 # Supported versions
-We support the two major Go versions, which are 1.17 and 1.18 at the moment.
+We support the two major Go versions, which are 1.20 and 1.21 at the moment.
 
 # Features
-- Supports all v5.1 features
+- Supports all v6.0 features
 
 # SDK
 ```go
@@ -31,56 +31,20 @@ New(configuration *configuration.Configuration) (*BankID)
 // Initiates an authentication order 
 (b BankID) Authenticate(context context.Context, payload *AuthenticationPayload) (*AuthenticateResponse, error)
 
-// Initiates an sign order
+// Initiates a phone authentication order 
+(b BankID) PhoneAuthenticate(context context.Context, payload *PhoneAuthenticationPayload) (*PhoneAuthenticateResponse, error)
+
+// Initiates a sign order
 (b BankID) Sign(context context.Context, payload *SignPayload) (*SignResponse, error)
 
-// Collects the result of a sign or auth order suing the orderRef as reference
+// Initiates a phone sign order
+(b BankID) PhoneSign(context context.Context, payload *PhoneSignPayload) (*PhoneSignResponse, error)
+
+// Collects the result of a sign or auth order using the orderRef as reference
 (b BankID) Collect(context context.Context, payload *CollectPayload) (*CollectResponse, error)
 
 // Cancels an ongoing sign or auth order
 (b BankID) Cancel(context context.Context, payload *CancelPayload) (*CancelResponse, error)
-```
-
-# Examples 
-
-## Initiate sign request
-
-```go
-import (
-    "context"
-    "fmt"
-    "io/ioutil"
-
-    "github.com/NicklasWallgren/bankid"
-    "github.com/NicklasWallgren/bankid/configuration"
-)
-
-certificate, err := ioutil.ReadFile("path/to/environment.p12")
-if err != nil {
-    panic(err)
-}
-
-config := configuration.New(
-    configuration.TestEnvironment,
-    &configuration.Pkcs12{Content: certificate, Password: "p12 password"},
-)
-
-bankId := bankid.New(config)
-
-payload := bankid.SignPayload{PersonalNumber: "<INSERT PERSONAL NUMBER>", EndUserIP: "192.168.1.1", UserVisibleData: "Test"}
-
-response, err := bankId.Sign(context.Background(), &payload)
-
-if err != nil {
-	if response, ok := err.(*bankid.ErrorResponse); ok {
-        fmt.Printf("ErrResponse: %s - %s \n", response.Details, response.ErrorCode)
-    }
-
-    fmt.Printf("%#v", err)
-    return
-}
-
-fmt.Println(response.Collect(ctx))
 ```
 
 ## Unit tests
