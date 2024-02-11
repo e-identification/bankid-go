@@ -54,7 +54,7 @@ go test -v -race $(go list ./... | grep -v vendor)
 
 ### Code Guide
 
-We use GitHub Actions to make sure the codebase is consistent (`golangci-lint run`) and continuously tested (`go test -v -race $(go list ./... | grep -v vendor)`). We try to keep comments at a maximum of 120 characters of length and code at 120.
+We use GitHub Actions to make sure the codebase is consistent (`golangci-lint run`) and continuously tested (`go test -v -race $(go list ./...)`). We try to keep comments at a maximum of 120 characters of length and code at 120.
 
 
 ## Contributing
