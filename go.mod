@@ -3,7 +3,7 @@ module github.com/NicklasWallgren/bankid/v2
 go 1.21
 
 require (
-	github.com/stretchr/testify v1.8.2
+	github.com/stretchr/testify v1.8.4
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	software.sslmate.com/src/go-pkcs12 v0.2.0
 )
