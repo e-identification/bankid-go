@@ -26,7 +26,7 @@ jobs:
         run: go get github.com/mattn/goveralls
 
       - name: Test
-        run: go test -v -race $(go list ./... | grep -v vendor) -coverprofile=profile.cov
+        run: go test -v -race $(go list ./...) -coverprofile=profile.cov
 
       - name: Send coverage
         env:

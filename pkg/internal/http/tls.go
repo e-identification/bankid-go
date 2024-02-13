@@ -9,7 +9,7 @@ import (
 
 	"github.com/NicklasWallgren/bankid/v2/pkg/configuration"
 
-	"golang.org/x/crypto/pkcs12"
+	"software.sslmate.com/src/go-pkcs12"
 )
 
 // NewTLSClientConfig initiates a new tls.Config.
