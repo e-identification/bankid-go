@@ -55,7 +55,7 @@ linters-settings:
   gci:
     sections:
       - standard
-      - prefix(github.com/NicklasWallgren/bankid)
+      - prefix(github.com/e-identification/bankid)
       - default
     custom-order: true
 

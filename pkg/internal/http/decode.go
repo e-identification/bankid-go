@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/NicklasWallgren/bankid/v2/pkg/internal"
+	"github.com/e-identification/bankid/pkg/internal"
 )
 
 type statusCodeRange struct {

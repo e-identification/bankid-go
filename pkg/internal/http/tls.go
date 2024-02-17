@@ -7,7 +7,7 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/NicklasWallgren/bankid/v2/pkg/configuration"
+	"github.com/e-identification/bankid/pkg/configuration"
 
 	"software.sslmate.com/src/go-pkcs12"
 )

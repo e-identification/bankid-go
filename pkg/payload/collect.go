@@ -1,6 +1,6 @@
 package payload
 
-import "github.com/NicklasWallgren/bankid/v2/pkg/internal/http"
+import "github.com/e-identification/bankid/pkg/internal/http"
 
 // CollectPayload holds the required fields of the collect Payload.
 type CollectPayload struct {

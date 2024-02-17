@@ -19,6 +19,6 @@ func (u *UserDataString) UnmarshalJSON(bytes []byte) error {
 }
 
 // MarshalJSON marshals the type into JSON.
-func (u UserDataString) MarshalJSON() ([]byte, error) {
-	return []byte("\"" + base64.StdEncoding.EncodeToString([]byte(u)) + "\""), nil
+func (u *UserDataString) MarshalJSON() ([]byte, error) {
+	return []byte("\"" + base64.StdEncoding.EncodeToString([]byte(*u)) + "\""), nil
 }

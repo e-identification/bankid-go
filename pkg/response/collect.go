@@ -58,22 +58,22 @@ type CollectResponse struct {
 	CompletionData CompletionData `json:"CompletionData"`
 }
 
-func (c CollectResponse) String() string {
+func (c *CollectResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
 // IsPending return true if the order is being processed. hintCode describes the status of the order.
-func (c CollectResponse) IsPending() bool {
+func (c *CollectResponse) IsPending() bool {
 	return c.Status == StatusPending
 }
 
 // IsFailed return true if something went wrong with the order. hintCode describes the error.
-func (c CollectResponse) IsFailed() bool {
+func (c *CollectResponse) IsFailed() bool {
 	return c.Status == StatusFailed
 }
 
 // IsComplete return true if the order is complete. CompletionData holds User information.
-func (c CollectResponse) IsComplete() bool {
+func (c *CollectResponse) IsComplete() bool {
 	return c.Status == StatusComplete
 }
 
