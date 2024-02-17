@@ -4,7 +4,7 @@
 [![Reviewdog](https://github.com/e-identification/bankid-go/workflows/reviewdog/badge.svg)](https://github.com/e-identification/bankid-go/actions?query=workflow%3Areviewdog)
 [![Go Report Card](https://goreportcard.com/badge/github.com/e-identification/bankid-go)](https://goreportcard.com/report/github.com/e-identification/bankid-go)
 [![GoDoc](https://godoc.org/github.com/e-identification/bankid-go?status.svg)](https://godoc.org/github.com/e-identification/bankid-go)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/df8f68c41bba49e688b4aa2d90313ba8)](https://app.codacy.com/gh/e-identification/bankid-go/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/564889b413574c82a13b2ff82cade53e)](https://app.codacy.com/gh/e-identification/bankid-go/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 A library for providing BankID services as an RP (Relying party).  
 Supports the latest v6 features.
