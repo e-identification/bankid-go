@@ -1,20 +1,20 @@
 # BankID library
 
-[![Build Status](https://github.com/e-identification/bankid/workflows/Test/badge.svg)](https://github.com/e-identification/bankid/actions?query=workflow%3ATest)
-[![Reviewdog](https://github.com/e-identification/bankid/workflows/reviewdog/badge.svg)](https://github.com/e-identification/bankid/actions?query=workflow%3Areviewdog)
-[![Go Report Card](https://goreportcard.com/badge/github.com/e-identification/bankid)](https://goreportcard.com/report/github.com/e-identification/bankid)
-[![GoDoc](https://godoc.org/github.com/e-identification/bankid?status.svg)](https://godoc.org/github.com/e-identification/bankid)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/cabd5fbbcde543ec959fb4a3581600ed)](https://app.codacy.com/gh/NicklasWallgren/bankid?utm_source=github.com&utm_medium=referral&utm_content=NicklasWallgren/bankid&utm_campaign=Badge_Grade)
+[![Build Status](https://github.com/e-identification/bankid-go/workflows/Test/badge.svg)](https://github.com/e-identification/bankid-go/actions?query=workflow%3ATest)
+[![Reviewdog](https://github.com/e-identification/bankid-go/workflows/reviewdog/badge.svg)](https://github.com/e-identification/bankid-go/actions?query=workflow%3Areviewdog)
+[![Go Report Card](https://goreportcard.com/badge/github.com/e-identification/bankid-go)](https://goreportcard.com/report/github.com/e-identification/bankid-go)
+[![GoDoc](https://godoc.org/github.com/e-identification/bankid-go?status.svg)](https://godoc.org/github.com/e-identification/bankid-go)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/df8f68c41bba49e688b4aa2d90313ba8)](https://app.codacy.com/gh/e-identification/bankid-go/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 A library for providing BankID services as an RP (Relying party).  
 Supports the latest v6 features.
 
-To learn how to use the library, please refer to the [documentation](https://godoc.org/github.com/e-identification/bankid). There are some [examples](./examples) that may be useful as well.
+To learn how to use the library, please refer to the [documentation](https://godoc.org/github.com/e-identification/bankid-go). There are some [examples](./examples) that may be useful as well.
 
 # Installation
 The library can be installed through `go get` 
 ```bash
-go get github.com/e-identification/bankid
+go get github.com/e-identification/bankid-go
 ```
 
 # Supported versions
