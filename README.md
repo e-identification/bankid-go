@@ -18,7 +18,7 @@ go get github.com/e-identification/bankid
 ```
 
 # Supported versions
-We support the two major Go versions, which are 1.20 and 1.21 at the moment.
+We support the two major Go versions, which are 1.21 and 1.22 at the moment.
 
 # Features
 - Supports all v6.0 features
