@@ -14,9 +14,9 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/e-identification/bankid/pkg/configuration"
-	bankIdHttp "github.com/e-identification/bankid/pkg/internal/http"
-	"github.com/e-identification/bankid/pkg/payload"
+	"github.com/e-identification/bankid-go/pkg/configuration"
+	bankIdHttp "github.com/e-identification/bankid-go/pkg/internal/http"
+	"github.com/e-identification/bankid-go/pkg/payload"
 
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/go-playground/validator.v9"

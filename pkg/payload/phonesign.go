@@ -1,6 +1,6 @@
 package payload
 
-import "github.com/e-identification/bankid/pkg/internal/http"
+import "github.com/e-identification/bankid-go/pkg/internal/http"
 
 // PhoneSignPayload holds the required and optional fields for the phone sign payload.
 type PhoneSignPayload struct {

@@ -8,9 +8,9 @@ import (
 	"path"
 	"runtime"
 
-	"github.com/e-identification/bankid/pkg"
-	"github.com/e-identification/bankid/pkg/configuration"
-	"github.com/e-identification/bankid/pkg/payload"
+	"github.com/e-identification/bankid-go/pkg"
+	"github.com/e-identification/bankid-go/pkg/configuration"
+	"github.com/e-identification/bankid-go/pkg/payload"
 )
 
 func main() {

@@ -1,4 +1,4 @@
-module github.com/e-identification/bankid
+module github.com/e-identification/bankid-go
 
 go 1.21
 

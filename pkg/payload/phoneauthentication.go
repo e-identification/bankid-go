@@ -1,6 +1,6 @@
 package payload
 
-import "github.com/e-identification/bankid/pkg/internal/http"
+import "github.com/e-identification/bankid-go/pkg/internal/http"
 
 // PhoneAuthenticationPayload holds the required and optional fields of the phone authentication request.
 type PhoneAuthenticationPayload struct {

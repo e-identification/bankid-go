@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/e-identification/bankid/pkg/configuration"
+	"github.com/e-identification/bankid-go/pkg/configuration"
 )
 
 // The known API endpoints status codes.
