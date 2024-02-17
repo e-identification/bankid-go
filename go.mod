@@ -1,4 +1,4 @@
-module github.com/NicklasWallgren/bankid/v2
+module github.com/e-identification/bankid
 
 go 1.21
 

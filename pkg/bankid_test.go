@@ -14,9 +14,9 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/NicklasWallgren/bankid/v2/pkg/configuration"
-	bankIdHttp "github.com/NicklasWallgren/bankid/v2/pkg/internal/http"
-	"github.com/NicklasWallgren/bankid/v2/pkg/payload"
+	"github.com/e-identification/bankid/pkg/configuration"
+	bankIdHttp "github.com/e-identification/bankid/pkg/internal/http"
+	"github.com/e-identification/bankid/pkg/payload"
 
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/go-playground/validator.v9"
@@ -26,11 +26,11 @@ func TestAuthenticate(t *testing.T) {
 	bankID, teardown := testBankID(fileToResponseHandler(t, "resource/test_data/sign_response.json"))
 	defer teardown()
 
-	payload := &payload.AuthenticationPayload{
+	requestPayload := &payload.AuthenticationPayload{
 		EndUserIP: "192.168.1.1", Requirement: &payload.Requirement{PersonalNumber: "123456789123"},
 	}
 
-	response, err := bankID.Authenticate(context.Background(), payload)
+	response, err := bankID.Authenticate(context.Background(), requestPayload)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -44,11 +44,11 @@ func TestPhoneAuthentication(t *testing.T) {
 	bankID, teardown := testBankID(fileToResponseHandler(t, "resource/test_data/phone_sign_response.json"))
 	defer teardown()
 
-	payload := &payload.PhoneAuthenticationPayload{
+	requestPayload := &payload.PhoneAuthenticationPayload{
 		PersonalNumber: "123456789123", CallInitiator: "RP", UserVisibleData: "Test",
 	}
 
-	response, err := bankID.PhoneAuthenticate(context.Background(), payload)
+	response, err := bankID.PhoneAuthenticate(context.Background(), requestPayload)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -66,13 +66,13 @@ func TestSign(t *testing.T) {
 	bankID, teardown := testBankID(fileToResponseHandler(t, "resource/test_data/sign_response.json"))
 	defer teardown()
 
-	payload := &payload.SignPayload{
+	requestPayload := &payload.SignPayload{
 		EndUserIP:       "192.168.1.1",
 		UserVisibleData: "Test",
 		Requirement:     &payload.Requirement{CardReader: "", PersonalNumber: "123456789123"},
 	}
 
-	response, err := bankID.Sign(context.Background(), payload)
+	response, err := bankID.Sign(context.Background(), requestPayload)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -90,9 +90,11 @@ func TestPhoneSign(t *testing.T) {
 	bankID, teardown := testBankID(fileToResponseHandler(t, "resource/test_data/phone_sign_response.json"))
 	defer teardown()
 
-	payload := &payload.PhoneSignPayload{PersonalNumber: "123456789123", CallInitiator: "RP", UserVisibleData: "Test"}
+	requestPayload := &payload.PhoneSignPayload{
+		PersonalNumber: "123456789123", CallInitiator: "RP", UserVisibleData: "Test",
+	}
 
-	response, err := bankID.PhoneSign(context.Background(), payload)
+	response, err := bankID.PhoneSign(context.Background(), requestPayload)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -110,12 +112,12 @@ func TestSignWithInvalidPayload(t *testing.T) {
 	bankID, _ := NewBankIDClient(configuration.NewConfiguration(configuration.TestEnvironment,
 		&configuration.Pkcs12{Content: loadFile(getResourcePath("certificates/test.p12")), Password: "qwerty123"}))
 
-	payload := &payload.SignPayload{
+	requestPayload := &payload.SignPayload{
 		EndUserIP:       "192.168.1.1",
 		UserVisibleData: "Test",
 		Requirement:     &payload.Requirement{CardReader: "", PersonalNumber: "INVALID-PERSONAL-NUMBER"},
 	}
-	_, err := bankID.Sign(context.Background(), payload)
+	_, err := bankID.Sign(context.Background(), requestPayload)
 
 	var validationErrors validator.ValidationErrors
 
@@ -132,9 +134,9 @@ func TestCollect(t *testing.T) {
 	bankID, teardown := testBankID(fileToResponseHandler(t, "resource/test_data/collect_response.json"))
 	defer teardown()
 
-	payload := &payload.CollectPayload{OrderRef: ""}
+	requestPayload := &payload.CollectPayload{OrderRef: ""}
 
-	response, err := bankID.Collect(context.Background(), payload)
+	response, err := bankID.Collect(context.Background(), requestPayload)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -148,9 +150,9 @@ func TestCancel(t *testing.T) {
 	bankID, teardown := testBankID(stringToResponseHandler(t, "{}"))
 	defer teardown()
 
-	payload := &payload.CancelPayload{OrderRef: ""}
+	requestPayload := &payload.CancelPayload{OrderRef: ""}
 
-	response, err := bankID.Cancel(context.Background(), payload)
+	response, err := bankID.Cancel(context.Background(), requestPayload)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -178,14 +180,14 @@ func TestQRCodeContent(t *testing.T) {
 // Returns a bankID whose requests will always return
 // a response configured by the handler.
 func testBankID(handler http.HandlerFunc) (*BankIDClient, func()) {
-	configuration := configuration.NewConfiguration(configuration.TestEnvironment,
+	clientConfiguration := configuration.NewConfiguration(configuration.TestEnvironment,
 		&configuration.Pkcs12{Content: loadFile(getResourcePath("certificates/test.p12")), Password: "qwerty123"})
 
-	bankID, _ := NewBankIDClient(configuration)
+	bankID, _ := NewBankIDClient(clientConfiguration)
 
 	httpClient, teardown := testHTTPClient(handler)
 
-	client, _ := bankIdHttp.NewClient(configuration, bankIdHttp.WithHTTPClient(httpClient))
+	client, _ := bankIdHttp.NewClient(clientConfiguration, bankIdHttp.WithHTTPClient(httpClient))
 	bankID.client = client
 
 	return bankID, teardown
@@ -201,7 +203,7 @@ func testHTTPClient(handler http.Handler) (*http.Client, func()) {
 			},
 			// #nosec G402
 			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: true,
+				InsecureSkipVerify: true, // nolint:gosec
 			},
 		},
 	}

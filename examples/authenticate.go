@@ -8,22 +8,25 @@ import (
 	"path"
 	"runtime"
 
-	"github.com/NicklasWallgren/bankid/v2/pkg"
-	"github.com/NicklasWallgren/bankid/v2/pkg/configuration"
-	"github.com/NicklasWallgren/bankid/v2/pkg/payload"
+	"github.com/e-identification/bankid/pkg"
+	"github.com/e-identification/bankid/pkg/configuration"
+	"github.com/e-identification/bankid/pkg/payload"
 )
 
 func main() {
-	configuration := configuration.NewConfiguration(
+	clientConfiguration := configuration.NewConfiguration(
 		configuration.TestEnvironment,
 		&configuration.Pkcs12{Content: loadPkcs12(getResourcePath("certificates/test.p12")), Password: "qwerty123"},
 	)
 
-	bankID, err := pkg.NewBankIDClient(configuration)
+	bankID, err := pkg.NewBankIDClient(clientConfiguration)
 
-	payload := payload.AuthenticationPayload{EndUserIP: "192.168.1.1", UserVisibleData: "blabla", Requirement: &payload.Requirement{PersonalNumber: "201912312392"}}
+	authenticationPayload := payload.AuthenticationPayload{
+		EndUserIP: "192.168.1.1", UserVisibleData: "To be showed in the BankID application ",
+		Requirement: &payload.Requirement{PersonalNumber: "201912312392"},
+	}
 
-	httpResponse, err := bankID.Authenticate(context.Background(), &payload)
+	httpResponse, err := bankID.Authenticate(context.Background(), &authenticationPayload)
 	if err != nil {
 		var apiError *pkg.APIError
 

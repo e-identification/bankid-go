@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/NicklasWallgren/bankid/v2/pkg/response"
+	"github.com/e-identification/bankid/pkg/response"
 )
 
 func TestDecodeUsingInvalidHttpResponse(t *testing.T) {

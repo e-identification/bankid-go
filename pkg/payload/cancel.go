@@ -1,6 +1,6 @@
 package payload
 
-import "github.com/NicklasWallgren/bankid/v2/pkg/internal/http"
+import "github.com/e-identification/bankid/pkg/internal/http"
 
 // CancelPayload holds the required fields of the collect Payload.
 type CancelPayload struct {

@@ -1,6 +1,6 @@
 package payload
 
-import "github.com/NicklasWallgren/bankid/v2/pkg/internal/http"
+import "github.com/e-identification/bankid/pkg/internal/http"
 
 // SignPayload holds the required and optional fields for the sign payload.
 type SignPayload struct {

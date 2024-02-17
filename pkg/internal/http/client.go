@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/NicklasWallgren/bankid/v2/pkg/configuration"
+	"github.com/e-identification/bankid/pkg/configuration"
 )
 
 // The known API endpoints status codes.
@@ -84,7 +84,7 @@ func (c client) Call(ctx context.Context, request *Request) (Response, error) {
 	return c.decoder.decode(request, resp) // nolint:wrapcheck
 }
 
-// newRequest creates and prepares a instance of http Request.
+// newRequest creates and prepares an instance of http Request.
 func (c client) newRequest(context context.Context, url string, body io.Reader) (*http.Request, error) {
 	req, err := http.NewRequestWithContext(context, http.MethodPost, url, body)
 	req.Header.Add("Content-Type", "application/json")
