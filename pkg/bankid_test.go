@@ -1,4 +1,4 @@
-package bankid
+package pkg
 
 import (
 	"context"
@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -15,7 +14,10 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/NicklasWallgren/bankid/configuration"
+	"github.com/e-identification/bankid-go/pkg/configuration"
+	bankIdHttp "github.com/e-identification/bankid-go/pkg/internal/http"
+	"github.com/e-identification/bankid-go/pkg/payload"
+
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -24,14 +26,39 @@ func TestAuthenticate(t *testing.T) {
 	bankID, teardown := testBankID(fileToResponseHandler(t, "resource/test_data/sign_response.json"))
 	defer teardown()
 
-	payload := &AuthenticationPayload{PersonalNumber: "123456789123", EndUserIP: "192.168.1.1"}
+	requestPayload := &payload.AuthenticationPayload{
+		EndUserIP: "192.168.1.1", Requirement: &payload.Requirement{PersonalNumber: "123456789123"},
+	}
 
-	response, err := bankID.Authenticate(context.Background(), payload)
+	response, err := bankID.Authenticate(context.Background(), requestPayload)
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	if response == nil {
 		t.Fatal("Got nil response")
+	}
+}
+
+func TestPhoneAuthentication(t *testing.T) {
+	bankID, teardown := testBankID(fileToResponseHandler(t, "resource/test_data/phone_sign_response.json"))
+	defer teardown()
+
+	requestPayload := &payload.PhoneAuthenticationPayload{
+		PersonalNumber: "123456789123", CallInitiator: "RP", UserVisibleData: "Test",
+	}
+
+	response, err := bankID.PhoneAuthenticate(context.Background(), requestPayload)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if response == nil {
+		t.Fatal("Got nil response")
+	}
+
+	if response.OrderRef != "131daac9-16c6-4618-beb0-365768f37288" {
+		t.Error("Got wrong auto start token")
 	}
 }
 
@@ -39,25 +66,58 @@ func TestSign(t *testing.T) {
 	bankID, teardown := testBankID(fileToResponseHandler(t, "resource/test_data/sign_response.json"))
 	defer teardown()
 
-	payload := &SignPayload{PersonalNumber: "123456789123", EndUserIP: "192.168.1.1", UserVisibleData: "Test", Requirement: &Requirement{CardReader: ""}}
+	requestPayload := &payload.SignPayload{
+		EndUserIP:       "192.168.1.1",
+		UserVisibleData: "Test",
+		Requirement:     &payload.Requirement{CardReader: "", PersonalNumber: "123456789123"},
+	}
 
-	response, err := bankID.Sign(context.Background(), payload)
+	response, err := bankID.Sign(context.Background(), requestPayload)
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	if response == nil {
 		t.Fatal("Got nil response")
 	}
+
 	if response.AutoStartToken != "7c40b5c9-fa74-49cf-b98c-bfe651f9a7c6" {
 		t.Error("Got wrong auto start token")
 	}
 }
 
-func TestSignWithInvalidPayload(t *testing.T) {
-	bankID := New(&configuration.Configuration{})
+func TestPhoneSign(t *testing.T) {
+	bankID, teardown := testBankID(fileToResponseHandler(t, "resource/test_data/phone_sign_response.json"))
+	defer teardown()
 
-	payload := &SignPayload{PersonalNumber: "INVALID-PERSONAL-NUMBER", EndUserIP: "192.168.1.1", UserVisibleData: "Test", Requirement: &Requirement{CardReader: ""}}
-	_, err := bankID.Sign(context.Background(), payload)
+	requestPayload := &payload.PhoneSignPayload{
+		PersonalNumber: "123456789123", CallInitiator: "RP", UserVisibleData: "Test",
+	}
+
+	response, err := bankID.PhoneSign(context.Background(), requestPayload)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if response == nil {
+		t.Fatal("Got nil response")
+	}
+
+	if response.OrderRef != "131daac9-16c6-4618-beb0-365768f37288" {
+		t.Error("Got wrong auto start token")
+	}
+}
+
+func TestSignWithInvalidPayload(t *testing.T) {
+	bankID, _ := NewBankIDClient(configuration.NewConfiguration(configuration.TestEnvironment,
+		&configuration.Pkcs12{Content: loadFile(getResourcePath("certificates/test.p12")), Password: "qwerty123"}))
+
+	requestPayload := &payload.SignPayload{
+		EndUserIP:       "192.168.1.1",
+		UserVisibleData: "Test",
+		Requirement:     &payload.Requirement{CardReader: "", PersonalNumber: "INVALID-PERSONAL-NUMBER"},
+	}
+	_, err := bankID.Sign(context.Background(), requestPayload)
 
 	var validationErrors validator.ValidationErrors
 
@@ -74,12 +134,13 @@ func TestCollect(t *testing.T) {
 	bankID, teardown := testBankID(fileToResponseHandler(t, "resource/test_data/collect_response.json"))
 	defer teardown()
 
-	payload := &CollectPayload{OrderRef: ""}
+	requestPayload := &payload.CollectPayload{OrderRef: ""}
 
-	response, err := bankID.Collect(context.Background(), payload)
+	response, err := bankID.Collect(context.Background(), requestPayload)
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	if response == nil {
 		t.Fatal("Got nil response")
 	}
@@ -89,12 +150,13 @@ func TestCancel(t *testing.T) {
 	bankID, teardown := testBankID(stringToResponseHandler(t, "{}"))
 	defer teardown()
 
-	payload := &CancelPayload{OrderRef: ""}
+	requestPayload := &payload.CancelPayload{OrderRef: ""}
 
-	response, err := bankID.Cancel(context.Background(), payload)
+	response, err := bankID.Cancel(context.Background(), requestPayload)
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	if response == nil {
 		t.Fatal("Got nil response")
 	}
@@ -104,24 +166,28 @@ func TestQRCodeContent(t *testing.T) {
 	bankID, teardown := testBankID(stringToResponseHandler(t, "{}"))
 	defer teardown()
 
-	qrCodeContent, err := bankID.QRCodeContent("67df3917-fa0d-44e5-b327-edcc928297f8", "d28db9a7-4cde-429e-a983-359be676944c", 0)
+	qrCodeContent, err := bankID.QRCodeContent(
+		"67df3917-fa0d-44e5-b327-edcc928297f8",
+		"d28db9a7-4cde-429e-a983-359be676944c",
+		0)
 	if err != nil {
 		t.Fatal(err)
 	}
+	// nolint: lll
 	assert.Equal(t, "bankid.67df3917-fa0d-44e5-b327-edcc928297f8.0.dc69358e712458a66a7525beef148ae8526b1c71610eff2c16cdffb4cdac9bf8", qrCodeContent)
 }
 
 // Returns a bankID whose requests will always return
 // a response configured by the handler.
-func testBankID(handler http.HandlerFunc) (*BankID, func()) {
-	configuration := configuration.New(configuration.TestEnvironment,
+func testBankID(handler http.HandlerFunc) (*BankIDClient, func()) {
+	clientConfiguration := configuration.NewConfiguration(configuration.TestEnvironment,
 		&configuration.Pkcs12{Content: loadFile(getResourcePath("certificates/test.p12")), Password: "qwerty123"})
 
-	bankID := New(configuration)
+	bankID, _ := NewBankIDClient(clientConfiguration)
 
 	httpClient, teardown := testHTTPClient(handler)
 
-	client, _ := newClient(configuration, withHTTPClient(httpClient))
+	client, _ := bankIdHttp.NewClient(clientConfiguration, bankIdHttp.WithHTTPClient(httpClient))
 	bankID.client = client
 
 	return bankID, teardown
@@ -137,7 +203,7 @@ func testHTTPClient(handler http.Handler) (*http.Client, func()) {
 			},
 			// #nosec G402
 			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: true,
+				InsecureSkipVerify: true, // nolint:gosec
 			},
 		},
 	}
@@ -146,6 +212,8 @@ func testHTTPClient(handler http.Handler) (*http.Client, func()) {
 }
 
 func fileToResponseHandler(t *testing.T, filename string) http.HandlerFunc {
+	t.Helper()
+
 	file, err := os.Open(filename) // #nosec G304
 	if err != nil {
 		panic(err)
@@ -163,6 +231,8 @@ func fileToResponseHandler(t *testing.T, filename string) http.HandlerFunc {
 }
 
 func stringToResponseHandler(t *testing.T, body string) http.HandlerFunc {
+	t.Helper()
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
 		// nolint:errcheck
@@ -173,7 +243,7 @@ func stringToResponseHandler(t *testing.T, body string) http.HandlerFunc {
 
 func loadFile(path string) []byte {
 	// #nosec G304
-	fileContent, err := ioutil.ReadFile(path)
+	fileContent, err := os.ReadFile(path)
 	if err != nil {
 		panic(err)
 	}

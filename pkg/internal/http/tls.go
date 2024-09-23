@@ -1,4 +1,4 @@
-package bankid
+package http
 
 import (
 	"crypto"
@@ -7,11 +7,13 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/NicklasWallgren/bankid/configuration"
-	"golang.org/x/crypto/pkcs12"
+	"github.com/e-identification/bankid-go/pkg/configuration"
+
+	"software.sslmate.com/src/go-pkcs12"
 )
 
-func newTLSClientConfig(configuration *configuration.Configuration) (*tls.Config, error) {
+// NewTLSClientConfig initiates a new tls.Config.
+func NewTLSClientConfig(configuration *configuration.Configuration) (*tls.Config, error) {
 	caPool, err := createCertPool(configuration.Environment.Certificate)
 	if err != nil {
 		return nil, err
@@ -49,7 +51,7 @@ func createCertPool(base64EncodedCertificate string) (*x509.CertPool, error) {
 func createCertLeaf(configuration *configuration.Configuration) (*tls.Certificate, error) {
 	key, leaf, err := pkcs12.Decode(configuration.Pkcs12.Content, configuration.Pkcs12.Password)
 	if err != nil {
-		return nil, fmt.Errorf("unable to load pkcs12 %w", err)
+		return nil, fmt.Errorf("unable to load pkcs12. %w", err)
 	}
 
 	cert := &tls.Certificate{

@@ -1,6 +1,8 @@
-package bankid
+package http
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 type encoder interface {
 	encode(payload Payload) ([]byte, error)

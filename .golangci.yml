@@ -1,39 +1,73 @@
 linters:
   enable:
-    # enable by default
-    - deadcode
+    # Default linters, which we make explicit.
     - errcheck
-    - gosimple
     - govet
     - ineffassign
     - staticcheck
-    - structcheck
     - typecheck
     - unused
-    - varcheck
-    # disabled by default
-    - depguard
+
+    # Optional linters, which we choose to apply additionally.
     - bodyclose
+    - bidichk
+    - containedctx
+    - contextcheck
     - dupl
+    - errname
     - errorlint
+    - funlen
+    - gci
+    - gochecknoinits
     - gocognit
     - goconst
     - gocritic
-    - gocyclo
     - godot
     - gofmt
-    - gofumpt
-    - goimports
-    - golint
     - gosec
-    - maligned
+    - gosimple
+    - gofumpt
+    - lll
+    - misspell
     - nestif
     - noctx
+    - prealloc
+    - reassign
+    - revive
+    - thelper
+    - unconvert
+    - unparam
+    - usestdlibvars
+    - wastedassign
     - whitespace
-    - wrapcheck
+    - wsl
+    - revive
+
+    # To be evaluated
+#    - gochecknoglobals    # Check that no global variables exist
+#    - ireturn             # Accept Interfaces, Return Concrete Types.
+
+linters-settings:
+  revive:
+    rules:
+      - name: exported
+
+  gci:
+    sections:
+      - standard
+      - prefix(github.com/e-identification/bankid-go)
+      - default
+    custom-order: true
 
 issues:
-  exclude-use-default: false
+  include:
+    - "EXC0012" # revive exported comments
+  exclude-rules:
+    - linters:
+        - lll
+      source: "^// "
 
-
-
+run:
+  go: '1.20'
+  skip-dirs:
+    - docs
