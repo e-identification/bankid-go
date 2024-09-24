@@ -6,9 +6,9 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"fmt"
+	"software.sslmate.com/src/go-pkcs12"
 
 	"github.com/stimtech/go-bankid/configuration"
-	"golang.org/x/crypto/pkcs12"
 )
 
 func newTLSClientConfig(configuration *configuration.Configuration) (*tls.Config, error) {
