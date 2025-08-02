@@ -18,7 +18,7 @@ const (
 	// A client has launched and received the order but additional steps
 	// for providing MRTD information is required to proceed with the order.
 	HintCodeUserMrtd = HintCode("userMrtd")
-	// Order is waiting for the user to confirm that they have received this
+	// HintCodeUserCallConfirm is the hint for when the order is waiting for the user to confirm that they have received this
 	// order while in a call with your organization.
 	HintCodeUserCallConfirm = HintCode("userCallConfirm")
 	// HintCodeUserSign is the hint for an order that is pending. A client has received the order.
