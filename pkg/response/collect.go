@@ -20,6 +20,18 @@ type CompletionData struct {
 	// The OCSP response. String. Base64-encoded. The OCSP response is signed by a certificate that has the same issuer
 	// as the certificate being verified. The OSCP response has an extension for Nonce
 	OcspResponse string `json:"ocspResponse"`
+
+	// Indicates the risk level of the order based on data available in the order.
+	//
+	// The possible values have the following meaning:
+	//
+	// 	low: No or low risk identified in the available order data.
+	// 	moderate: Might require further action, investigation or follow-up by you based on the order data.
+	// 	high: The order should be blocked or cancelled by you and needs further action, investigation or follow-up. This value will only be returned if you have requested to have the risk assement to be provided, but not supplied a risk condition.
+	//
+	// Note: This is only returned if requested in the order, and it may be absent if the risk could not be calculated.
+	// If you have sent the correct endUserIp and additional data, a risk indication with the value "high" means there are signs of the channel binding being compromised, or other highly concerning circumstances.
+	Risk string `json:"risk"`
 }
 
 // User holds information related to the user.
