@@ -55,7 +55,7 @@ type CollectResponse struct {
 	OrderRef       string         `json:"orderRef"`
 	Status         Status         `json:"status"`
 	HintCode       string         `json:"hintCode"`
-	CompletionData CompletionData `json:"CompletionData"`
+	CompletionData CompletionData `json:"completionData"`
 }
 
 func (c *CollectResponse) String() string {
