@@ -52,6 +52,12 @@ func (j jsonDecoder) decode(request *Request, response *http.Response) (Response
 }
 
 func (j jsonDecoder) decodeError(request *Request, response *http.Response) error {
+	if response.Header.Get("Content-Type") != "application/json" {
+		// According to the specification, the API should return errors in JSON format,
+		// but this does not happen when the certificate is invalid.
+		return fmt.Errorf("unable to decode error response: %s", internal.TryReadCloserToString(response.Body))
+	}
+
 	err := Decode(response.Body, request.ErrorResponse)
 	if err != nil {
 		return err
