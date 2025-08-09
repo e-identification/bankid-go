@@ -20,6 +20,9 @@ func main() {
 	)
 
 	bankID, err := pkg.NewBankIDClient(clientConfiguration)
+	if err != nil {
+		panic(err)
+	}
 
 	authenticationPayload := payload.AuthenticationPayload{
 		EndUserIP: "192.168.1.1", UserVisibleData: "To be showed in the BankID application ",
@@ -29,13 +32,13 @@ func main() {
 	httpResponse, err := bankID.Authenticate(context.Background(), &authenticationPayload)
 	if err != nil {
 		var apiError *pkg.APIError
-
 		if errors.As(err, &apiError) {
 			fmt.Printf("%s - %s \n", apiError.Details, apiError.ErrorCode)
 			return
 		}
 
 		fmt.Printf("%#v", err)
+
 		return
 	}
 

@@ -249,7 +249,7 @@ func (b BankIDClient) Cancel(
 func (b BankIDClient) QRCodeContent(qrStartToken, qrStartSecret string, seconds int) (string, error) {
 	hash := hmac.New(sha256.New, []byte(qrStartSecret))
 
-	_, err := hash.Write([]byte(fmt.Sprintf("%d", seconds)))
+	_, err := fmt.Fprintf(hash, "%d", seconds)
 	if err != nil {
 		return "", fmt.Errorf("qr code content error %w", err)
 	}
@@ -262,7 +262,6 @@ func (b BankIDClient) call(context context.Context, request *http.Request) (http
 	// Validate the integrity of the Payload
 	if err := b.validator.Struct(request.Payload); err != nil {
 		var validationErrors playground.ValidationErrors
-
 		if errors.As(err, &validationErrors) {
 			fieldError := validationErrors[0]
 

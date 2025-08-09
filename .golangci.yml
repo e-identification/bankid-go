@@ -1,3 +1,6 @@
+version: "2"
+run:
+  go: "1.20"
 linters:
   enable:
     # Default linters, which we make explicit.
@@ -5,28 +8,23 @@ linters:
     - govet
     - ineffassign
     - staticcheck
-    - typecheck
     - unused
 
     # Optional linters, which we choose to apply additionally.
-    - bodyclose
     - bidichk
+    - bodyclose
     - containedctx
     - contextcheck
     - dupl
     - errname
     - errorlint
     - funlen
-    - gci
     - gochecknoinits
     - gocognit
     - goconst
     - gocritic
     - godot
-    - gofmt
     - gosec
-    - gosimple
-    - gofumpt
     - lll
     - misspell
     - nestif
@@ -40,34 +38,44 @@ linters:
     - usestdlibvars
     - wastedassign
     - whitespace
-    - wsl
-    - revive
-
-    # To be evaluated
-#    - gochecknoglobals    # Check that no global variables exist
-#    - ireturn             # Accept Interfaces, Return Concrete Types.
-
-linters-settings:
-  revive:
+    - wsl_v5
+  settings:
+    revive:
+      rules:
+        - name: exported
+    wsl_v5:
+#      allow-first-in-block: true
+#      allow-whole-block: false
+#      branch-max-lines: 2
+  exclusions:
+    generated: lax
+    presets:
+      - common-false-positives
+      - legacy
+      - std-error-handling
     rules:
-      - name: exported
-
-  gci:
-    sections:
-      - standard
-      - prefix(github.com/e-identification/bankid-go)
-      - default
-    custom-order: true
-
-issues:
-  include:
-    - "EXC0012" # revive exported comments
-  exclude-rules:
-    - linters:
-        - lll
-      source: "^// "
-
-run:
-  go: '1.20'
-  skip-dirs:
-    - docs
+      - linters:
+          - lll
+        source: '^// '
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+  settings:
+    gci:
+      sections:
+        - standard
+        - prefix(github.com/e-identification/bankid-go)
+        - default
+      custom-order: true
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

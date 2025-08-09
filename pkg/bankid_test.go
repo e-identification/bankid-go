@@ -120,7 +120,6 @@ func TestSignWithInvalidPayload(t *testing.T) {
 	_, err := bankID.Sign(context.Background(), requestPayload)
 
 	var validationErrors validator.ValidationErrors
-
 	if !errors.As(err, &validationErrors) {
 		t.Error("Invalid error type")
 	}
@@ -175,6 +174,32 @@ func TestQRCodeContent(t *testing.T) {
 	}
 	// nolint: lll
 	assert.Equal(t, "bankid.67df3917-fa0d-44e5-b327-edcc928297f8.0.dc69358e712458a66a7525beef148ae8526b1c71610eff2c16cdffb4cdac9bf8", qrCodeContent)
+}
+
+func TestWith403ForbiddenResponse(t *testing.T) {
+	bankID, teardown := testBankID(func(writer http.ResponseWriter, request *http.Request) {
+		writer.WriteHeader(http.StatusForbidden)
+		fileToResponseHandler(t, "resource/test_data/403_forbidden_response.html")(writer, request)
+	})
+
+	defer teardown()
+
+	requestPayload := &payload.AuthenticationPayload{
+		EndUserIP: "192.168.1.1", Requirement: &payload.Requirement{PersonalNumber: "123456789123"},
+	}
+
+	response, err := bankID.Authenticate(context.Background(), requestPayload)
+	if response != nil {
+		t.Fatal("Got non-nil response")
+	}
+
+	if err == nil {
+		t.Fatal(err)
+	}
+
+	assert.Equal(t, "unable to decode error response: "+
+		"<html>\n<head>\n    <title>403 Forbidden</title>\n</head>\n<body>\n    "+
+		"<center><h1>403 Forbidden</h1></center>\n    <hr>\n    <center>nginx</center>\n</body>\n</html>", err.Error())
 }
 
 // Returns a bankID whose requests will always return
