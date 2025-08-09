@@ -7,5 +7,5 @@ type PhoneSignResponse struct {
 
 // OnDecode is called on decode.
 func (s *PhoneSignResponse) OnDecode() {
-	// no op
+	s.PhoneAuthenticateResponse.OnDecode()
 }
