@@ -15,6 +15,7 @@
       "notBefore": "1502983274000",
       "notAfter": "1563549674000"
     },
+    "bankIdIssueDate": "2025-08-09Z",
     "signature": "<base64-encoded data>",
     "ocspResponse": "<base64-encoded data>"
   }
