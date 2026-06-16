@@ -17,4 +17,7 @@ type SignPayload struct {
 	UserNonVisibleData UserDataString `validate:"omitempty,base64Length=200000" json:"userNonVisibleData,omitempty"`
 	// This parameter indicates that userVisibleData holds formatting characters.
 	UserVisibleDataFormat string `validate:"omitempty,eq=simpleMarkdownV1" json:"userVisibleDataFormat,omitempty"`
+	// If this is set to true a risk indicator will be included in the collect response when the order completes.
+	// The risk indication requires that the endUserIp is correct (otherwise a high risk indication may be returned erroneously).
+	ReturnRisk bool `json:"returnRisk,omitempty"`
 }
